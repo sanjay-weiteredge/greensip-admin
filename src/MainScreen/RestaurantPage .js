@@ -9,7 +9,7 @@ const RestaurantPage = () => {
   return (
     <>
    
-      <NavTemplate tab={"Restaurant"}>
+      <NavTemplate tab={"Business Partner"}>
       <PageBody>
         <Restaurant/>
       </PageBody>

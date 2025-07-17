@@ -5,7 +5,7 @@ const cardData = [
   { label: "Registered Users", count: 120 },
   { label: "Adds Play", count: 45 },
   { label: "Bottle Destroyed", count: 32 },
-  { label: "Total Restaurants", count: 8 },
+  { label: "Total Business Partners", count: 8 },
   { label: "Total Machines", count: 10 },
 ];
 
@@ -45,7 +45,7 @@ const HoverCard = ({ label, count }) => {
 
 const Home = () => {
   return (
-    <>
+    <div style={{padding:"16px", background:"#f3fbf3"}}>
       <h3 style={{ padding: "16px", color: "green" }}>Dashboard</h3>
       <hr />
       <div style={gridStyle}>
@@ -60,7 +60,7 @@ const Home = () => {
           <HoverCard key={query.label} label={query.label} count={query.count} />
         ))}
       </div>
-    </>
+    </div>
   );
 };
 

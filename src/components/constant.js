@@ -20,7 +20,7 @@ export const navBarCoordinationOptions = [
     },
     {
       icon: NavCategoryIcon,
-      label: "Restaurant",
+      label: "Business Partner",
     },
     {
       icon: NavBookingIcon,

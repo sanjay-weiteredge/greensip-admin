@@ -8,6 +8,7 @@ import RestaurantPage from "../MainScreen/RestaurantPage ";
 import CouponPage from "../MainScreen/CouponPage";
 import BarcodePage from "../MainScreen/barcodePage";
 import SupportReq from "../MainScreen/SupportReq";
+import CreateCouponPage from "../MainScreen/CreateCouponPage";
 
 export default function AppRoutes() {
 
@@ -45,6 +46,11 @@ export default function AppRoutes() {
       />
 
       <Route
+        path="/coupon/create"
+        element={<CreateCouponPage />}
+      />
+
+      <Route
         path="/barcode"
         element={
           <BarcodePage />
@@ -68,11 +74,9 @@ export default function AppRoutes() {
       />
 
       <Route
-        path="/restaurant"
+        path="/business-partner"
         element={
-
-          <RestaurantPage />
-
+          <RestaurantPage/>
         }
       />
 
