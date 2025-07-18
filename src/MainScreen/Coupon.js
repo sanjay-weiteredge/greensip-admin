@@ -96,8 +96,8 @@ const createButtonStyle = {
     color: "#fff",
     border: "none",
     borderRadius: "6px",
-    fontWeight: 600,
-    fontSize: "16px",
+    fontWeight: 400,
+    fontSize: "15px",
     cursor: "pointer",
     boxShadow: "0 1px 2px rgba(0,0,0,0.07)",
     transition: "background 0.2s",
@@ -176,7 +176,7 @@ const Coupon = () => {
                             <td style={tdStyle}>
                                 <div style={actionStyle}>
                                     <button
-                                        style={{ ...createButtonStyle, background: '#e53935', padding: '6px 14px', fontSize: '15px' }}
+                                        style={{ ...createButtonStyle, background: '#e53935', padding: '6px 10px', fontSize: '15px' }}
                                         title="Delete"
                                         onClick={() => handleDeleteClick(c.id)}
                                     >

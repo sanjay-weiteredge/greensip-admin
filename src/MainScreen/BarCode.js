@@ -2,7 +2,7 @@ import React from "react";
 
 const Barcode = () => {
     return (
-        <><h1>gENRATE BARCODE</h1></>
+        <><h1>Generate Barcode fjnfgzjgfzhjzgfjf</h1></>
     )
 }
 

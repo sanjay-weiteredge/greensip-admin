@@ -1,6 +1,7 @@
 import React from "react";
 import NavTemplate from "../components/NavTemplate.js";
 import PageBody from "../components/PageBody.js";
+import SupportQuery from "./SupportQuery.js";
 
 
 const SupportReq = () => {
@@ -10,7 +11,7 @@ const SupportReq = () => {
    
       <NavTemplate tab={"Support"}>
       <PageBody>
-        <><h1>Support Query</h1></>
+        <SupportQuery/>
       </PageBody>
       </NavTemplate>
     

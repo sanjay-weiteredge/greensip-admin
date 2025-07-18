@@ -19,11 +19,13 @@ const gridStyle = {
   gridTemplateRows: "auto auto",
   gap: "18px",
   marginTop: "18px",
+  width : "80%",
+  margin: "0 auto",
 };
 
 const buttonRowStyle = {
   display: "flex",
-  justifyContent: "flex-end",
+  justifyContent: "center",
   gap: "12px",
 };
 
@@ -102,14 +104,14 @@ const CreateCoupon = () => {
       <div style={buttonRowStyle}>
         <button
           type="button"
-          style={{ ...buttonStyle, background: "#ccc", color: "#333" }}
+          style={{ ...buttonStyle, background: "#ccc", color: "#333" , fontWeight: "400" }}
           onClick={() => navigate("/coupon")}
         >
           Cancel
         </button>
         <button
           type="submit"
-          style={{ ...buttonStyle, background: "#4caf50", color: "#fff" }}
+          style={{ ...buttonStyle, background: "#4caf50", color: "#fff", fontWeight: "400" }}
         >
           Create
         </button>

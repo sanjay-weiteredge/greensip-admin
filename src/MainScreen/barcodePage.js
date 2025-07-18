@@ -20,4 +20,3 @@ const BarcodePage = () => {
 };
 
 export default BarcodePage;
-

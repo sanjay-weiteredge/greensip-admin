@@ -213,7 +213,7 @@ const User = () => {
             <div style={headerRowStyle}>
                 <h3 style={{ color: "green", margin: 0 }}>Users</h3>
                 <div style={searchBarWrapperStyle}>
-                    <FiSearch style={searchIconStyle} />
+                <span style={searchIconStyle}>🔍</span>
                     <input
                         type="text"
                         placeholder="Search by name, email, or contact..."
