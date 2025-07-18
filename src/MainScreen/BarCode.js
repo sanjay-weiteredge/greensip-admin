@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { getAllBarcodes, generateBarcodes } from "./apiBarcode";
 
 const tableStyle = {
     width: "100%",
@@ -88,36 +87,26 @@ const createButtonStyle = {
     transition: "background 0.2s",
 };
 
+const dummyBarcodes = [
+    { id: 1, code: "BCODE001", batchId: "BATCH01", type: "TypeA", isUsed: false, createdAt: new Date().toISOString(), barcodeImage: null },
+    { id: 2, code: "BCODE002", batchId: "BATCH01", type: "TypeA", isUsed: true, createdAt: new Date().toISOString(), barcodeImage: null },
+    { id: 3, code: "BCODE003", batchId: "BATCH02", type: "TypeB", isUsed: false, createdAt: new Date().toISOString(), barcodeImage: null },
+    { id: 4, code: "BCODE004", batchId: "BATCH02", type: "TypeB", isUsed: true, createdAt: new Date().toISOString(), barcodeImage: null },
+];
+
 const Barcode = () => {
-    const [barcodes, setBarcodes] = useState([]);
+    const [barcodes, setBarcodes] = useState(dummyBarcodes);
     const [search, setSearch] = useState("");
     const [showModal, setShowModal] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
     const [form, setForm] = useState({ count: 1, batchId: "", type: "" });
     const [generating, setGenerating] = useState(false);
     const [successMsg, setSuccessMsg] = useState("");
+    const [error, setError] = useState("");
 
+    // No API calls, just use dummy data
     useEffect(() => {
-        fetchBarcodes();
+        setBarcodes(dummyBarcodes);
     }, []);
-
-    const fetchBarcodes = async () => {
-        setLoading(true);
-        setError("");
-        try {
-            const res = await getAllBarcodes();
-            if (res.success) {
-                setBarcodes(res.barcodes);
-            } else {
-                setError(res.message || "Failed to fetch barcodes");
-            }
-        } catch (e) {
-            setError(e.message || "Failed to fetch barcodes");
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleOpenModal = () => {
         setForm({ count: 1, batchId: "", type: "" });
@@ -136,29 +125,30 @@ const Barcode = () => {
         setForm((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleGenerate = async (e) => {
+    const handleGenerate = (e) => {
         e.preventDefault();
         setGenerating(true);
         setError("");
         setSuccessMsg("");
-        try {
-            const res = await generateBarcodes({
-                count: Number(form.count),
-                batchId: form.batchId,
-                type: form.type,
-            });
-            if (res.success) {
-                setSuccessMsg(res.message);
-                fetchBarcodes();
-                setForm({ count: 1, batchId: "", type: "" });
-            } else {
-                setError(res.message || "Failed to generate barcodes");
+        // Simulate barcode generation
+        setTimeout(() => {
+            const newBarcodes = [];
+            for (let i = 0; i < Number(form.count); i++) {
+                newBarcodes.push({
+                    id: barcodes.length + i + 1,
+                    code: `BCODE${(barcodes.length + i + 1).toString().padStart(3, "0")}`,
+                    batchId: form.batchId,
+                    type: form.type,
+                    isUsed: false,
+                    createdAt: new Date().toISOString(),
+                    barcodeImage: null,
+                });
             }
-        } catch (e) {
-            setError(e.message || "Failed to generate barcodes");
-        } finally {
+            setBarcodes((prev) => [...prev, ...newBarcodes]);
+            setSuccessMsg("Barcodes generated successfully (dummy mode)");
+            setForm({ count: 1, batchId: "", type: "" });
             setGenerating(false);
-        }
+        }, 800);
     };
 
     // Filter barcodes by code, batchId, or type
@@ -190,44 +180,38 @@ const Barcode = () => {
                 </div>
             </div>
             <hr />
-            {loading ? (
-                <div style={{ textAlign: "center", margin: "32px 0" }}>Loading...</div>
-            ) : error ? (
-                <div style={{ color: "red", textAlign: "center", margin: "32px 0" }}>{error}</div>
-            ) : (
-                <table style={tableStyle}>
-                    <thead>
-                        <tr>
-                            <th style={thStyle}>ID</th>
-                            <th style={thStyle}>Code</th>
-                            <th style={thStyle}>Batch ID</th>
-                            <th style={thStyle}>Type</th>
-                            <th style={thStyle}>Used?</th>
-                            <th style={thStyle}>Created At</th>
-                            <th style={thStyle}>Barcode Image</th>
+            <table style={tableStyle}>
+                <thead>
+                    <tr>
+                        <th style={thStyle}>ID</th>
+                        <th style={thStyle}>Code</th>
+                        <th style={thStyle}>Batch ID</th>
+                        <th style={thStyle}>Type</th>
+                        <th style={thStyle}>Used?</th>
+                        <th style={thStyle}>Created At</th>
+                        <th style={thStyle}>Barcode Image</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {filteredBarcodes.map((b) => (
+                        <tr key={b.id}>
+                            <td style={tdStyle}>{b.id}</td>
+                            <td style={tdStyle}>{b.code}</td>
+                            <td style={tdStyle}>{b.batchId}</td>
+                            <td style={tdStyle}>{b.type}</td>
+                            <td style={tdStyle}>{b.isUsed ? "Yes" : "No"}</td>
+                            <td style={tdStyle}>{b.createdAt ? new Date(b.createdAt).toLocaleString() : ""}</td>
+                            <td style={tdStyle}>
+                                {b.barcodeImage ? (
+                                    <img src={b.barcodeImage} alt="barcode" style={{ height: 40 }} />
+                                ) : (
+                                    <span style={{ color: '#aaa' }}>N/A</span>
+                                )}
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {filteredBarcodes.map((b) => (
-                            <tr key={b.id}>
-                                <td style={tdStyle}>{b.id}</td>
-                                <td style={tdStyle}>{b.code}</td>
-                                <td style={tdStyle}>{b.batchId}</td>
-                                <td style={tdStyle}>{b.type}</td>
-                                <td style={tdStyle}>{b.isUsed ? "Yes" : "No"}</td>
-                                <td style={tdStyle}>{b.createdAt ? new Date(b.createdAt).toLocaleString() : ""}</td>
-                                <td style={tdStyle}>
-                                    {b.barcodeImage ? (
-                                        <img src={b.barcodeImage} alt="barcode" style={{ height: 40 }} />
-                                    ) : (
-                                        <span style={{ color: '#aaa' }}>N/A</span>
-                                    )}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            )}
+                    ))}
+                </tbody>
+            </table>
             {/* Modal Popup for Generate Barcode */}
             {showModal && (
                 <div style={{

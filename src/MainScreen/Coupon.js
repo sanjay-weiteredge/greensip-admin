@@ -181,7 +181,7 @@ const Coupon = () => {
                         <span style={searchIconStyle}>🔍</span>
                         <input
                             type="text"
-                            placeholder="Search by code or status..."
+                            placeholder="Search by code or Points..."
                             value={search}
                             onChange={e => setSearch(e.target.value)}
                             style={searchInputStyle}

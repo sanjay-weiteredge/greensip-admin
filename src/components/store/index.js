@@ -14,24 +14,27 @@ export function UserProvider({ children }) {
 
   const updateUser = (newUser) => {
     setUserInfo(newUser);
+    if (newUser) {
+      localStorage.setItem("userInfo", JSON.stringify(newUser));
+    } else {
+      localStorage.removeItem("userInfo");
+    }
   };
 
   useEffect(() => {
-    const storedData = localStorage.getItem("userToken");
-
-    try {
-      if (storedData) {
-        setUserInfo(storedData);
-        // const parsedData = JSON.parse(storedData);
-        // if (typeof parsedData === "object") {
-        //   setUserInfo(parsedData);
-        // }
+    const storedData = localStorage.getItem("userInfo");
+    if (storedData) {
+      try {
+        setUserInfo(JSON.parse(storedData));
+      } catch {
+        setUserInfo(null);
       }
-    } catch (error) {
-      console.warn("Invalid JSON format in localStorage for userToken.");
-      // localStorage.removeItem("userToken");
     }
   }, []);
+
+  useEffect(() => {
+    console.log("[UserProvider] userInfo:", userInfo);
+  }, [userInfo]);
 
   return (
     <UserContext.Provider value={{ userInfo, updateUser }}>

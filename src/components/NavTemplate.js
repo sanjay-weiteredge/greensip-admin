@@ -113,6 +113,6 @@ const TopHeader = styled(Box)({
   justifyContent: "space-between",
   position: "sticky",
   top: 0,
-  width: "100%",
+
   zIndex: 1100,
 });

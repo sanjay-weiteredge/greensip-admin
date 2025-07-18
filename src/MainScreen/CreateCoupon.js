@@ -41,6 +41,19 @@ const buttonStyle = {
   transition: "background 0.2s",
 };
 
+const fieldContainerStyle = {
+  display: "flex",
+  flexDirection: "column",
+  marginBottom: "8px",
+};
+const labelStyle = {
+  fontWeight: 600,
+  fontSize: "1.05rem",
+  marginBottom: "6px",
+  color: "#22223b",
+  letterSpacing: "0.01em",
+};
+
 const CreateCoupon = () => {
   const [form, setForm] = useState({
     code: "",
@@ -61,8 +74,8 @@ const CreateCoupon = () => {
     setLoading(true);
     try {
       const response = await createCoupon(form);
-      const data = await response.json();
-      if (response.ok && data.success) {
+      const data = response.data;
+      if (data.success) {
         alert("Coupon created successfully!");
         navigate("/coupon");
       } else {
@@ -74,46 +87,61 @@ const CreateCoupon = () => {
       setLoading(false);
     }
   };
-
   return (
     <form style={formStyle} onSubmit={handleSubmit}>
       <h2 style={{ color: "green", marginBottom: 0, textAlign: "center", gridColumn: "1 / span 2" }}>Create Coupon</h2>
       <div style={gridStyle}>
-        <InputField
-          label="Code"
-          placeholder="Enter coupon code"
-          name="code"
-          value={form.code}
-          onChange={handleChange}
-          required
-        />
-        <InputField
-          label="Description"
-          placeholder="Enter description"
-          name="description"
-          value={form.description}
-          onChange={handleChange}
-          required
-        />
-        <InputField
-          label="Expiry"
-          placeholder="YYYY-MM-DD"
-          name="expiry"
-          value={form.expiry}
-          onChange={handleChange}
-          required
-          type="date"
-        />
-        <InputField
-          label="Point Required"
-          placeholder="Enter points required"
-          name="pointRequired"
-          value={form.pointRequired}
-          onChange={handleChange}
-          required
-          type="number"
-          min="0"
-        />
+        <div style={fieldContainerStyle}>
+          <label htmlFor="coupon-code" style={labelStyle}>Code</label>
+          <InputField
+            id="coupon-code"
+            label="Code"
+            placeholder="Enter coupon code"
+            name="code"
+            value={form.code}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div style={fieldContainerStyle}>
+          <label htmlFor="coupon-description" style={labelStyle}>Description</label>
+          <InputField
+            id="coupon-description"
+            label="Description"
+            placeholder="Enter description"
+            name="description"
+            value={form.description}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div style={fieldContainerStyle}>
+          <label htmlFor="coupon-expiry" style={labelStyle}>Expiry</label>
+          <InputField
+            id="coupon-expiry"
+            label="Expiry"
+            placeholder="YYYY-MM-DD"
+            name="expiry"
+            value={form.expiry}
+            onChange={handleChange}
+            required
+            type="date"
+          />
+        </div>
+        <div style={fieldContainerStyle}>
+          <label htmlFor="coupon-pointRequired" style={labelStyle}>Point Required</label>
+          <InputField
+            id="coupon-pointRequired"
+            label="Point Required"
+            placeholder="Enter points required"
+            name="pointRequired"
+            value={form.pointRequired}
+            onChange={handleChange}
+            required
+            type="number"
+            min="0"
+          />
+        </div>
       </div>
       <div style={buttonRowStyle}>
         <button

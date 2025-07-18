@@ -79,7 +79,7 @@ const StyledTypoBox = styled(Box)({
 const StyledOptions = styled(Stack)({
   marginTop: "12%",
   gap: 20,
-  height: "100vh",
+  // height: "100vh",
 });
 
 const StyledStackMain = styled(Stack)({

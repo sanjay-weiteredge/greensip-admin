@@ -26,6 +26,7 @@ const UserProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [edited, setEdited] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -37,15 +38,43 @@ const UserProfile = () => {
         setUserName(res.admin.username || "");
         setLastName(res.admin.lastName || "");
         setEmail(res.admin.email || "");
-        setPhoneNumber(res.admin.phoneNumber || "");
+        setPhoneNumber(res.admin.contactNumber || "");
         setRole(res.admin.role || "");
         setImage(res.admin.profileImage || null);
+        setEdited(false);
       } else {
         setError(res.message || "Failed to fetch profile");
       }
     };
     fetchProfile();
   }, []);
+
+  // Track original values for change detection
+  const originalValues = {
+    userName: userInfo?.userName || userInfo?.username || "",
+    lastName: userInfo?.lastName || "",
+    email: userInfo?.email || "",
+    phoneNumber: userInfo?.contactNumber || "",
+    role: userInfo?.role || "",
+    image: userInfo?.profileImage || null,
+  };
+
+  // Watch for changes in any field
+  useEffect(() => {
+    if (
+      userName !== originalValues.userName ||
+      lastName !== originalValues.lastName ||
+      email !== originalValues.email ||
+      phoneNumber !== originalValues.phoneNumber ||
+      role !== originalValues.role ||
+      (image && image !== originalValues.image) ||
+      (profileImage && profileImage !== null)
+    ) {
+      setEdited(true);
+    } else {
+      setEdited(false);
+    }
+  }, [userName, lastName, email, phoneNumber, role, image, profileImage]);
 
   const toggleEdit = (field) => {
     setEditableFields((prev) => ({ ...prev, [field]: !prev[field] }));
@@ -76,6 +105,7 @@ const UserProfile = () => {
       // profileImage will be handled by imageFile if present
     };
     const res = await updateAdminProfile(profileData, profileImage);
+    
     setLoading(false);
     if (res.success) {
       setSuccess("Profile updated successfully");
@@ -85,10 +115,12 @@ const UserProfile = () => {
         setUserName(refreshed.admin.username || "");
         setLastName(refreshed.admin.lastName || "");
         setEmail(refreshed.admin.email || "");
-        setPhoneNumber(refreshed.admin.phoneNumber || "");
+        setPhoneNumber(refreshed.admin.contactNumber || "");
         setRole(refreshed.admin.role || "");
         setImage(refreshed.admin.profileImage || null);
         setProfileImage(null);
+        updateUser(refreshed.admin); // <-- update context with latest user info
+        setEdited(false);
       }
     } else {
       setError(res.message || "Failed to update profile");
@@ -97,13 +129,14 @@ const UserProfile = () => {
 
   const handleOnClickCancel = () => {
     if (userInfo) {
-      setUserName(userInfo.userName || "");
+      setUserName(userInfo.userName || userInfo.username || "");
       setLastName(userInfo.lastName || "");
       setEmail(userInfo.email || "");
       setPhoneNumber(userInfo.contactNumber || "");
       setRole(userInfo.role || "");
       setImage(userInfo.profileImage || null);
       setProfileImage(null);
+      setEdited(false);
     }
   }
   
@@ -139,33 +172,61 @@ const UserProfile = () => {
                 </div>
               </div>
 
-              <div className="input-container">
-                {[
-                  { label: "First Name", value: userName, setValue: setUserName, field: "userName" },
-                  { label: "Last Name", value: lastName, setValue: setLastName, field: "lastName" },
+              <div className="input-container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }}>
+                {[ 
+                  { label: "User Name", value: userName, setValue: setUserName, field: "userName" },                
                   { label: "Email", value: email, setValue: setEmail, field: "email" },
                   { label: "Phone Number", value: phoneNumber, setValue: setPhoneNumber, field: "phoneNumber" },
-                  { label: "Role", value: role, setValue: setRole, field: "role" },
-                ].map(({ label, value, setValue, field }) => (
-                  <div key={field} className="input-wrapper">
-                    <label className="input-label">{label}</label>
-                    <div className="input-edit-container">
+                  { label: "Role", value: role, setValue: setRole, field: "role", nonEditable: true },
+                ].map(({ label, value, setValue, field, nonEditable }) => (
+                  <div key={field} className="input-wrapper" style={{ position: 'relative', marginBottom: 24 }}>
+                    <label className="input-label" style={{ fontSize: 14, color: '#888', marginBottom: 6, fontWeight: 500 }}>{label}</label>
+                    <div className="input-field-container" style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
                       <input
                         type="text"
                         value={value}
                         onChange={(e) => setValue(e.target.value)}
                         placeholder={label}
                         className="input-field"
-                        disabled={!editableFields[field]}
+                        style={{
+                          height: 44,
+                          width: '100%',
+                          borderRadius: 10,
+                          border: (!nonEditable && editableFields[field]) ? '1.5px solid #2563eb' : '1px solid #e5e7eb',
+                          background: (!nonEditable && editableFields[field]) ? '#fff' : '#f7f8fa',
+                          padding: '0 40px 0 14px',
+                          fontSize: 16,
+                          color: '#22223b',
+                          outline: 'none',
+                          boxShadow: (!nonEditable && editableFields[field]) ? '0 2px 8px rgba(37,99,235,0.08)' : 'none',
+                          transition: 'border 0.2s, box-shadow 0.2s',
+                        }}
+                        disabled={nonEditable || !editableFields[field]}
                       />
-                      <FaEdit className="edit-icon" onClick={() => toggleEdit(field)} />
+                      {!nonEditable && (
+                        <span
+                          style={{
+                            position: 'absolute',
+                            right: 12,
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            cursor: 'pointer',
+                            color: editableFields[field] ? '#2563eb' : '#b0b0b0',
+                            background: 'transparent',
+                            zIndex: 2,
+                          }}
+                          onClick={() => toggleEdit(field)}
+                        >
+                          <FaEdit size={18} />
+                        </span>
+                      )}
                     </div>
                   </div>
                 ))}
               </div>
 
               <div className="button-container">
-                <button className="save-button" onClick={handleOnClickSave}>Save & Update</button>
+                <button className="save-button" onClick={handleOnClickSave} disabled={!edited}>Save & Update</button>
                 <button className="cancel-button" onClick={handleOnClickCancel}>Cancel</button>
               </div>
             </>
@@ -289,6 +350,12 @@ const UserProfile = () => {
             gap: 15px;
             padding: 30px;
           }
+          .save-button:disabled {
+  background-color: #b0b0b0 !important;
+  color: #fff !important;
+  cursor: not-allowed !important;
+  opacity: 0.7;
+}
         `}
       </style>
     </>

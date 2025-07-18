@@ -3,13 +3,14 @@ import { styled } from "@mui/system";
 import Profile from "./Profile.js";
 import CustomeButton from "./CustomeButton.js";
 import Image from "./Image .js";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 
 import logoImage from "../assets/image/SpeakllerLogo.svg";
 import profileimage from "../assets/image/Profile.png";
 import notificationIcon from "../assets/image/Notification.png";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "./store/index.js";
+import { UserContext } from "./store/index.js";
 
 
 const HeaderWrapper = styled(Stack)`
@@ -57,13 +58,21 @@ const ProfileImage = styled("img")`
 `;
 
 const NavHeader = () => {
+  const { updateUser } = useContext(UserContext);
+
   const { userInfo } = useUser();
   const navigate = useNavigate();
 
   const handleProfileClick = () => {
-    console.log("Profile image clicked");
     navigate('/Profile');
   };
+
+  // Robust fallback for profile image
+  let profileImgSrc = "https://png.pngtree.com/png-vector/20190710/ourmid/pngtree-user-vector-avatar-png-image_1541962.jpg";
+  if (userInfo) {
+    if (userInfo.profileImage) profileImgSrc = userInfo.profileImage;
+    else if (userInfo.photo) profileImgSrc = userInfo.photo;
+  }
 
   return (
     <HeaderWrapper direction="row">
@@ -72,7 +81,21 @@ const NavHeader = () => {
       <UserIconWrapper>
         {/* <StyledImage src={notificationIcon} alt="notification" /> */}
         <Profile />
-        <ProfileImage src={userInfo && userInfo.photo ? userInfo.photo : "https://png.pngtree.com/png-vector/20190710/ourmid/pngtree-user-vector-avatar-png-image_1541962.jpg"} alt="Profile" onClick={handleProfileClick} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ textAlign: 'right', marginRight: 8 }}>
+            <div style={{ fontWeight: 600, fontSize: 15, color: '#222' }}>
+              {userInfo && (userInfo.username || userInfo.userName) ? (userInfo.username || userInfo.userName) : 'User'}
+            </div>
+            <div style={{ fontSize: 13, color: '#555' }}>
+              {userInfo && userInfo.email ? userInfo.email : ''}
+            </div>
+          </div>
+          <ProfileImage
+            src={profileImgSrc}
+            alt="Profile"
+            onClick={handleProfileClick}
+          />
+        </div>
       </UserIconWrapper>
     </HeaderWrapper>
   );

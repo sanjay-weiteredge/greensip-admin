@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import logo from "./logo.svg";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/Auth";
+import { getAdminProfile } from "../services/adminProfile";
+import { useUser } from "../components/store";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -10,6 +12,7 @@ const Login = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const { updateUser } = useUser();
 
   const handleLogin = async () => {
     setError("");
@@ -18,6 +21,13 @@ const Login = () => {
     setLoading(false);
     if (res.success) {
       localStorage.setItem('token', res.token);
+      // Fetch profile after login
+      const profileRes = await getAdminProfile();
+      console.log("[Login] getAdminProfile response:", profileRes);
+      if (profileRes.success && profileRes.admin) {
+        updateUser(profileRes.admin);
+        localStorage.setItem("userInfo", JSON.stringify(profileRes.admin));
+      }
       navigate("/dashboard");
     } else {
       setError(res.message || "Login failed");
@@ -160,8 +170,6 @@ const styles = {
     boxShadow: "0 2px 8px rgba(37,99,235,0.08)",
     transition: "background 0.2s, transform 0.2s"
   },
-
-  
 };
 
 export default Login;
