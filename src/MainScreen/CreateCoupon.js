@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import InputField from "../components/InputField";
 import { useNavigate } from "react-router-dom";
+import { createCoupon } from "../services/coupon";
 
 const formStyle = {
   maxWidth: "100%",
@@ -47,6 +48,7 @@ const CreateCoupon = () => {
     expiry: "",
     pointRequired: "",
   });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -54,11 +56,23 @@ const CreateCoupon = () => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would normally send form data to backend
-    alert("Coupon created! (Demo only)");
-    navigate("/coupon");
+    setLoading(true);
+    try {
+      const response = await createCoupon(form);
+      const data = await response.json();
+      if (response.ok && data.success) {
+        alert("Coupon created successfully!");
+        navigate("/coupon");
+      } else {
+        alert(data.message || "Failed to create coupon.");
+      }
+    } catch (error) {
+      alert("Server error while creating coupon.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -112,8 +126,9 @@ const CreateCoupon = () => {
         <button
           type="submit"
           style={{ ...buttonStyle, background: "#4caf50", color: "#fff", fontWeight: "400" }}
+          disabled={loading}
         >
-          Create
+          {loading ? "Creating..." : "Create"}
         </button>
       </div>
     </form>

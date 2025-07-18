@@ -1,13 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
 import logo from "./logo.svg";
 import { useNavigate } from "react-router-dom";
+import { login } from "../services/Auth";
 
 const Login = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = () => {
-    navigate("/");
-  }
+  const handleLogin = async () => {
+    setError("");
+    setLoading(true);
+    const res = await login(email, password);
+    setLoading(false);
+    if (res.success) {
+      localStorage.setItem('token', res.token);
+      navigate("/dashboard");
+    } else {
+      setError(res.message || "Login failed");
+    }
+  };
 
   return (
     <div style={styles.container}>
@@ -17,19 +32,51 @@ const Login = () => {
           <h1 style={styles.label}>Enter Email Address</h1>
           <div style={styles.inputWrapper}>
             <span style={styles.inputIcon}>📧</span>
-            <input type="email" placeholder="Enter Email Address" style={styles.inputField}/>
+            <input
+              type="email"
+              placeholder="Enter Email Address"
+              style={styles.inputField}
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              disabled={loading}
+            />
           </div>
           <h1 style={styles.label}>Enter Password</h1>
           <div style={styles.inputWrapper}>
             <span style={styles.inputIcon}>🔒</span>
-            <input type="password" placeholder="Enter Password" style={styles.inputField}/>
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter Password"
+              style={styles.inputField}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              disabled={loading}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "1.1rem",
+                color: "#64748b",
+                marginLeft: 4,
+                outline: "none"
+              }}
+              tabIndex={-1}
+            >
+              {showPassword ? "🙈" : "👁️"}
+            </button>
           </div>
-          <button onClick={handleLogin} style={styles.button}>Login</button>
+          {error && <div style={{ color: 'red', marginBottom: 8 }}>{error}</div>}
+          <button onClick={handleLogin} style={styles.button} disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
+          </button>
         </div>
       </div>
     </div>
-  )
-    
+  );
 };
 
 const styles = {
@@ -41,7 +88,8 @@ const styles = {
     position: "relative"
   },
   login: {
-    width: "370px",
+    width: "470px",
+    height:"470px",
     margin: "auto",
     padding: "48px 32px 32px 32px",
     background: "#fff",
@@ -54,7 +102,7 @@ const styles = {
     zIndex: 1
   },
   logo: {
-    width: "90px",
+    width: "180px",
     marginBottom: "28px",
     borderRadius: "50%",
   },

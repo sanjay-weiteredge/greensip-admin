@@ -1,13 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
-const initialCoupons = [
-    { id: 1, code: "WELCOME10", description: "10%", expiry: "2024-12-31", pointRequired: 100 },
-    { id: 2, code: "SUMMER20", description: "20%", expiry: "2024-08-31", pointRequired: 200 },
-    { id: 3, code: "FESTIVE30", description: "30%", expiry: "2024-11-15", pointRequired: 300 },
-    { id: 4, code: "NEWUSER5", description: "5%", expiry: "2025-01-10", pointRequired: 50 },
-    { id: 5, code: "SPRING15", description: "15%", expiry: "2024-09-30", pointRequired: 150 },
-];
+import { getAllCoupons, deleteCoupon as deleteCouponApi } from "../services/coupon";
 
 const tableStyle = {
     width: "100%",
@@ -104,11 +97,41 @@ const createButtonStyle = {
 };
 
 const Coupon = () => {
-    const [coupons, setCoupons] = useState(initialCoupons);
+    const [coupons, setCoupons] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [deleteCouponId, setDeleteCouponId] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [deleting, setDeleting] = useState(false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchCoupons = async () => {
+            setLoading(true);
+            try {
+                const response = await getAllCoupons();
+                const data = response.data;
+                if (data.success && Array.isArray(data.coupons)) {
+                    setCoupons(
+                        data.coupons.map(c => ({
+                            id: c.id,
+                            code: c.code,
+                            description: c.description,
+                            expiry: c.validUntil ? c.validUntil.slice(0, 10) : "",
+                            pointRequired: c.pointsRequired,
+                        }))
+                    );
+                } else {
+                    alert(data.message || "Failed to fetch coupons.");
+                }
+            } catch (error) {
+                alert("Server error while fetching coupons.");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchCoupons();
+    }, []);
 
     const handleDeleteClick = (couponId) => {
         setDeleteCouponId(couponId);
@@ -120,10 +143,24 @@ const Coupon = () => {
         setDeleteCouponId(null);
     };
 
-    const handleConfirmDelete = () => {
-        setCoupons((prev) => prev.filter((c) => c.id !== deleteCouponId));
-        setShowModal(false);
-        setDeleteCouponId(null);
+    const handleConfirmDelete = async () => {
+        setDeleting(true);
+        try {
+            const response = await deleteCouponApi(deleteCouponId);
+            const data = response.data;
+            if (response.status === 200 && data.success) {
+                setCoupons((prev) => prev.filter((c) => c.id !== deleteCouponId));
+                alert("Coupon deleted successfully.");
+            } else {
+                alert(data.message || "Failed to delete coupon.");
+            }
+        } catch (error) {
+            alert("Server error while deleting coupon.");
+        } finally {
+            setShowModal(false);
+            setDeleteCouponId(null);
+            setDeleting(false);
+        }
     };
 
     // Filter coupons by code or pointRequired
@@ -154,6 +191,9 @@ const Coupon = () => {
                 </div>
             </div>
             <hr />
+            {loading ? (
+                <div style={{ textAlign: "center", marginTop: 40 }}>Loading coupons...</div>
+            ) : (
             <table style={tableStyle}>
                 <thead>
                     <tr>
@@ -188,6 +228,7 @@ const Coupon = () => {
                     ))}
                 </tbody>
             </table>
+            )}
             {/* Modal Popup for Delete */}
             {showModal && (
                 <div style={{
@@ -234,10 +275,12 @@ const Coupon = () => {
                                     borderRadius: "4px",
                                     background: "#e53935",
                                     color: "white",
-                                    cursor: "pointer",
+                                    cursor: deleting ? "not-allowed" : "pointer",
+                                    opacity: deleting ? 0.6 : 1,
                                 }}
+                                disabled={deleting}
                             >
-                                Delete
+                                {deleting ? "Deleting..." : "Delete"}
                             </button>
                         </div>
                     </div>

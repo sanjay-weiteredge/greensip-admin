@@ -9,6 +9,7 @@ import CouponPage from "../MainScreen/CouponPage";
 import BarcodePage from "../MainScreen/barcodePage";
 import SupportReq from "../MainScreen/SupportReq";
 import CreateCouponPage from "../MainScreen/CreateCouponPage";
+import PrivateRoute from "./privateRoute";
 
 export default function AppRoutes() {
 
@@ -20,63 +21,81 @@ export default function AppRoutes() {
       <Route
         path="/"
         element={
-          <DashBoardPage />
+          <PrivateRoute>
+            <DashBoardPage />
+          </PrivateRoute>
         }
       />
 
       <Route
         path="/dashboard"
         element={
-          <DashBoardPage />
+          <PrivateRoute>
+            <DashBoardPage />
+          </PrivateRoute>
         }
       />
 
       <Route
         path="/user"
         element={
-          <UserPage />
+          <PrivateRoute>
+            <UserPage />
+          </PrivateRoute>
         }
       />
 
       <Route
         path="/coupon"
         element={
-          <CouponPage />
+          <PrivateRoute>
+            <CouponPage />
+          </PrivateRoute>
         }
       />
 
       <Route
         path="/coupon/create"
-        element={<CreateCouponPage />}
+        element={
+          <PrivateRoute>
+            <CreateCouponPage />
+          </PrivateRoute>
+        }
       />
 
       <Route
         path="/barcode"
         element={
-          <BarcodePage />
+          <PrivateRoute>
+            <BarcodePage />
+          </PrivateRoute>
         }
       />
 
       <Route
         path="/support"
         element={
-          <SupportReq />
+          <PrivateRoute>
+            <SupportReq />
+          </PrivateRoute>
         }
       />
 
       <Route
         path="/profile"
         element={
-
-          <UserProfile />
-
+          <PrivateRoute>
+            <UserProfile />
+          </PrivateRoute>
         }
       />
 
       <Route
         path="/business-partner"
         element={
-          <RestaurantPage/>
+          <PrivateRoute>
+            <RestaurantPage/>
+          </PrivateRoute>
         }
       />
 
