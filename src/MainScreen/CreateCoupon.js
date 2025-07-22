@@ -77,7 +77,7 @@ const CreateCoupon = () => {
       const data = response.data;
       if (data.success) {
         alert("Coupon created successfully!");
-        navigate("/coupon");
+    navigate("/coupon");
       } else {
         alert(data.message || "Failed to create coupon.");
       }
@@ -93,54 +93,54 @@ const CreateCoupon = () => {
       <div style={gridStyle}>
         <div style={fieldContainerStyle}>
           <label htmlFor="coupon-code" style={labelStyle}>Code</label>
-          <InputField
+        <InputField
             id="coupon-code"
-            label="Code"
-            placeholder="Enter coupon code"
-            name="code"
-            value={form.code}
-            onChange={handleChange}
-            required
-          />
+          label="Code"
+          placeholder="Enter coupon code"
+          name="code"
+          value={form.code}
+          onChange={handleChange}
+          required
+        />
         </div>
         <div style={fieldContainerStyle}>
           <label htmlFor="coupon-description" style={labelStyle}>Description</label>
-          <InputField
+        <InputField
             id="coupon-description"
-            label="Description"
-            placeholder="Enter description"
-            name="description"
-            value={form.description}
-            onChange={handleChange}
-            required
-          />
+          label="Description"
+          placeholder="Enter description"
+          name="description"
+          value={form.description}
+          onChange={handleChange}
+          required
+        />
         </div>
         <div style={fieldContainerStyle}>
           <label htmlFor="coupon-expiry" style={labelStyle}>Expiry</label>
-          <InputField
+        <InputField
             id="coupon-expiry"
-            label="Expiry"
-            placeholder="YYYY-MM-DD"
-            name="expiry"
-            value={form.expiry}
-            onChange={handleChange}
-            required
-            type="date"
-          />
+          label="Expiry"
+          placeholder="YYYY-MM-DD"
+          name="expiry"
+          value={form.expiry}
+          onChange={handleChange}
+          required
+          type="date"
+        />
         </div>
         <div style={fieldContainerStyle}>
           <label htmlFor="coupon-pointRequired" style={labelStyle}>Point Required</label>
-          <InputField
+        <InputField
             id="coupon-pointRequired"
-            label="Point Required"
-            placeholder="Enter points required"
-            name="pointRequired"
-            value={form.pointRequired}
-            onChange={handleChange}
-            required
-            type="number"
-            min="0"
-          />
+          label="Point Required"
+          placeholder="Enter points required"
+          name="pointRequired"
+          value={form.pointRequired}
+          onChange={handleChange}
+          required
+          type="number"
+          min="0"
+        />
         </div>
       </div>
       <div style={buttonRowStyle}>

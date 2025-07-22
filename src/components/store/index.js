@@ -23,7 +23,7 @@ export function UserProvider({ children }) {
 
   useEffect(() => {
     const storedData = localStorage.getItem("userInfo");
-    if (storedData) {
+      if (storedData) {
       try {
         setUserInfo(JSON.parse(storedData));
       } catch {

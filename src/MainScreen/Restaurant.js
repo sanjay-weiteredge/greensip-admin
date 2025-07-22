@@ -140,6 +140,19 @@ const searchInputStyle = {
     width: "100%",
     boxSizing: "border-box",
 };
+const createButtonStyle = {
+    marginLeft: "16px",
+    padding: "10px 22px",
+    background: "#4caf50",
+    color: "#fff",
+    border: "none",
+    borderRadius: "6px",
+    fontWeight: 400,
+    fontSize: "15px",
+    cursor: "pointer",
+    boxShadow: "0 1px 2px rgba(0,0,0,0.07)",
+    transition: "background 0.2s",
+};
 
 const searchIconStyle = {
     position: "absolute",
@@ -156,6 +169,10 @@ const Restaurant = () => {
     const [deleteRestaurantId, setDeleteRestaurantId] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [search, setSearch] = useState("");
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [newVendor, setNewVendor] = useState({ name: '', email: '', password: '', phone: '', address: '' });
+    const [addError, setAddError] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleDeleteClick = (restaurantId) => {
         setDeleteRestaurantId(restaurantId);
@@ -173,6 +190,33 @@ const Restaurant = () => {
         setDeleteRestaurantId(null);
     };
 
+    const handleAddVendorChange = (e) => {
+        const { name, value } = e.target;
+        setNewVendor((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleAddVendor = (e) => {
+        e.preventDefault();
+        // Basic validation
+        if (!newVendor.name || !newVendor.email || !newVendor.password || !newVendor.phone || !newVendor.address) {
+            setAddError('All fields are required.');
+            return;
+        }
+        setRestaurants((prev) => [
+            ...prev,
+            {
+                id: prev.length ? prev[prev.length - 1].id + 1 : 1,
+                name: newVendor.name,
+                email: newVendor.email,
+                contact: newVendor.phone,
+                address: newVendor.address,
+            },
+        ]);
+        setShowAddModal(false);
+        setNewVendor({ name: '', email: '', password: '', phone: '', address: '' });
+        setAddError('');
+    };
+
     // Filter restaurants by search query (name, email, or contact)
     const filteredRestaurants = restaurants.filter((r) => {
         const q = search.toLowerCase();
@@ -187,6 +231,7 @@ const Restaurant = () => {
         <div style={containerStyle}>
             <div style={headerRowStyle}>
                 <h3 style={{ color: "green", margin: 0 }}>Business Partners</h3>
+                <div style={{ display: "flex", alignItems: "center" }}>
                 <div style={searchBarWrapperStyle}>
                     <span style={searchIconStyle}>🔍</span>
                     <input
@@ -197,6 +242,8 @@ const Restaurant = () => {
                         style={searchInputStyle}
                     />
                 </div>
+                <button style={createButtonStyle} onClick={() => setShowAddModal(true)}>Create Vendor</button>
+           </div>
             </div>
             <hr />
             <table style={tableStyle}>
@@ -253,6 +300,216 @@ const Restaurant = () => {
                                 Delete
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+            {/* Add Vendor Modal Popup */}
+            {showAddModal && (
+                <div style={{
+                    ...modalOverlayStyle,
+                    zIndex: 1200,
+                    background: 'rgba(0,0,0,0.10)',
+                }}>
+                    <div style={{
+                        ...modalContentStyle,
+                        minWidth: 700,
+                        maxWidth: 800,
+                        width: '95vw',
+                        padding: '40px 40px 32px 40px',
+                        borderRadius: 18,
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+                        position: 'relative',
+                        background: '#fff',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                    }}>
+                        <h2 style={{ marginBottom: 28, color: '#219653', fontWeight: 700, fontSize: 26, textAlign: 'center', letterSpacing: 0.2 }}>Add Vendor</h2>
+                        <form onSubmit={handleAddVendor} autoComplete="off" style={{ width: '100%' }}>
+                            <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: '1fr 1fr',
+                                gap: 40,
+                                marginBottom: 24,
+                                width: '100%',
+                                maxWidth: 700,
+                            }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                        <label style={{ fontWeight: 700, color: '#22223b', fontSize: 15, marginBottom: 2 }}>Name</label>
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            placeholder="Enter name"
+                                            value={newVendor.name}
+                                            onChange={handleAddVendorChange}
+                                            style={{
+                                                width: '100%',
+                                                padding: '13px 15px',
+                                                borderRadius: 8,
+                                                border: '1.5px solid #bdbdbd',
+                                                fontSize: 16,
+                                                background: '#fff',
+                                                outline: 'none',
+                                                transition: 'border 0.2s',
+                                            }}
+                                            required
+                                        />
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                        <label style={{ fontWeight: 700, color: '#22223b', fontSize: 15, marginBottom: 2 }}>Email</label>
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            placeholder="Enter email"
+                                            value={newVendor.email}
+                                            onChange={handleAddVendorChange}
+                                            style={{
+                                                width: '100%',
+                                                padding: '13px 15px',
+                                                borderRadius: 8,
+                                                border: '1.5px solid #bdbdbd',
+                                                fontSize: 16,
+                                                background: '#fff',
+                                                outline: 'none',
+                                                transition: 'border 0.2s',
+                                            }}
+                                            required
+                                        />
+                                    </div>
+                                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, position: 'relative' }}>
+                                        <label style={{ fontWeight: 700, color: '#22223b', fontSize: 15, marginBottom: 2 }}>Password</label>
+                                        <input
+                                            type={showPassword ? "text" : "password"}
+                                            name="password"
+                                            placeholder="Enter password"
+                                            value={newVendor.password}
+                                            onChange={handleAddVendorChange}
+                                            style={{
+                                                width: '100%',
+                                                padding: '13px 15px',
+                                                borderRadius: 8,
+                                                border: '1.5px solid #bdbdbd',
+                                                fontSize: 16,
+                                                background: '#fff',
+                                                outline: 'none',
+                                                transition: 'border 0.2s',
+
+                                            }}
+                                            required
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword((prev) => !prev)}
+                                            style={{
+                                                position: 'absolute',
+                                                right: 16,
+                                                top: '70%',
+                                                transform: 'translateY(-50%)',
+                                                background: 'none',
+                                                border: 'none',
+                                                cursor: 'pointer',
+                                                fontSize: 18,
+                                                color: '#888',
+                                                padding: 0, 
+                                                zIndex: 2,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                            }}
+                                            tabIndex={-1}
+                                        >
+                                            {showPassword ? '🙈' : <span style={{fontSize: 18}}>👁️</span>}
+                                        </button>
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                                  
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                        <label style={{ fontWeight: 700, color: '#22223b', fontSize: 15, marginBottom: 2 }}>Phone</label>
+                                        <input
+                                            type="text"
+                                            name="phone"
+                                            placeholder="Enter phone"
+                                            value={newVendor.phone}
+                                            onChange={handleAddVendorChange}
+                                            style={{
+                                                width: '100%',
+                                                padding: '13px 15px',
+                                                borderRadius: 8,
+                                                border: '1.5px solid #bdbdbd',
+                                                fontSize: 16,
+                                                background: '#fff',
+                                                outline: 'none',
+                                                transition: 'border 0.2s',
+                                            }}
+                                            required
+                                        />
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                        <label style={{ fontWeight: 700, color: '#22223b', fontSize: 15, marginBottom: 2 }}>Address</label>
+                                        <input
+                                            type="text"
+                                            name="address"
+                                            placeholder="Enter address"
+                                            value={newVendor.address}
+                                            onChange={handleAddVendorChange}
+                                            style={{
+                                                width: '100%',
+                                                padding: '13px 15px',
+                                                borderRadius: 8,
+                                                border: '1.5px solid #bdbdbd',
+                                                fontSize: 16,
+                                                background: '#fff',
+                                                outline: 'none',
+                                                transition: 'border 0.2s',
+                                            }}
+                                            required
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            {addError && <div style={{ color: 'red', marginTop: 2, marginBottom: 10, textAlign: 'center' }}>{addError}</div>}
+                            <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginTop: 10 }}>
+                                <button
+                                    type="button"
+                                    onClick={() => { setShowAddModal(false); setAddError(''); }}
+                                    style={{
+                                        padding: '12px 36px',
+                                        border: 'none',
+                                        borderRadius: 10,
+                                        background: '#e0e0e0',
+                                        color: '#333',
+                                        fontWeight: 700,
+                                        fontSize: 17,
+                                        cursor: 'pointer',
+                                        transition: 'background 0.2s',
+                                    }}
+                                    onMouseOver={e => e.currentTarget.style.background = '#bdbdbd'}
+                                    onMouseOut={e => e.currentTarget.style.background = '#e0e0e0'}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    style={{
+                                        padding: '12px 36px',
+                                        border: 'none',
+                                        borderRadius: 10,
+                                        background: '#219653',
+                                        color: 'white',
+                                        fontWeight: 700,
+                                        fontSize: 17,
+                                        cursor: 'pointer',
+                                        transition: 'background 0.2s',
+                                    }}
+                                    onMouseOver={e => e.currentTarget.style.background = '#176b3f'}
+                                    onMouseOut={e => e.currentTarget.style.background = '#219653'}
+                                >
+                                    Add Vendor
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}

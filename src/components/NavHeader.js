@@ -83,10 +83,10 @@ const NavHeader = () => {
         <Profile />
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ textAlign: 'right', marginRight: 8 }}>
-            <div style={{ fontWeight: 600, fontSize: 15, color: '#222' }}>
+            <div style={{ fontWeight: 600, fontSize: 15, color: '#fff' }}>
               {userInfo && (userInfo.username || userInfo.userName) ? (userInfo.username || userInfo.userName) : 'User'}
             </div>
-            <div style={{ fontSize: 13, color: '#555' }}>
+            <div style={{ fontSize: 13, color: '#fff' }}>
               {userInfo && userInfo.email ? userInfo.email : ''}
             </div>
           </div>

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 const cardData = [
   { label: "Registered Users", count: 120 },
-  { label: "Adds Play", count: 45 },
+  { label: "Ads Play", count: 45 },
   { label: "Bottle Destroyed", count: 32 },
   { label: "Total Business Partners", count: 8 },
   { label: "Total Machines", count: 10 },
