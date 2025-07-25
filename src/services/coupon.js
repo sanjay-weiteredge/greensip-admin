@@ -2,24 +2,26 @@ import axios from "axios";
 
 const BASE_URL = "http://localhost:8000/admin";
 
-export const createCoupon = async ({ code, description, pointRequired, expiry }) => {
-  const token = localStorage.getItem("token");
-  const body = {
-    code,
-    description,
-    pointsRequired: pointRequired,
-    expiryDate: expiry,
-  };
-  return axios.post(
-    `${BASE_URL}/coupons`,
-    body,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
+export const createCoupon = async (couponData, imageFile) => {
+  try {
+    const formData = new FormData();
+    Object.entries(couponData).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+    if (imageFile) {
+      formData.append('couponImage', imageFile);
     }
-  );
+    const response = await fetch('http://localhost:8000/admin/coupons', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+      body: formData,
+    });
+    return await response.json();
+  } catch (error) {
+    return { success: false, message: 'Network error', error };
+  }
 };
 
 export const getAllCoupons = async () => {
