@@ -129,7 +129,7 @@ const UserDetailsModal = ({ user, open, onClose }) => {
                     <div style={{ flex: 2, display: "flex", flexDirection: "column", gap: 18 }}>
                         <div style={{ display: "flex" }}>
                             <div style={detailLabelStyle}>Contact :</div>
-                            <div style={detailValueStyle}>{user.contact}</div>
+                            <div style={detailValueStyle}>{user.phone}</div>
                         </div>
                         <div style={{ display: "flex" }}>
                             <div style={detailLabelStyle}>Email :</div>
