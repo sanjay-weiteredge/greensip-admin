@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { generateBarcodes, getAllBarcodes } from "../services/barcode";
 
 const tableStyle = {
     width: "100%",
@@ -95,60 +96,128 @@ const dummyBarcodes = [
 ];
 
 const Barcode = () => {
-    const [barcodes, setBarcodes] = useState(dummyBarcodes);
+    const [barcodes, setBarcodes] = useState([]);
     const [search, setSearch] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [form, setForm] = useState({ count: 1, batchId: "", type: "" });
     const [generating, setGenerating] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [successMsg, setSuccessMsg] = useState("");
     const [error, setError] = useState("");
 
-    // No API calls, just use dummy data
+    // Validation function
+    const validateForm = () => {
+        const { count, batchId, type } = form;
+        
+        if (!count || count < 1 || count > 100) {
+            setError("Count must be between 1 and 100");
+            return false;
+        }
+        
+        if (!batchId || batchId.trim() === "") {
+            setError("Batch ID is required");
+            return false;
+        }
+        
+        if (!type || type.trim() === "") {
+            setError("Type is required");
+            return false;
+        }
+        
+        // Validate batchId is a positive integer
+        const batchIdNum = parseInt(batchId);
+        if (isNaN(batchIdNum) || batchIdNum <= 0) {
+            setError("Batch ID must be a positive integer");
+            return false;
+        }
+        
+        // Validate type format (alphanumeric and common barcode types)
+        const validTypes = ['code128', 'code39', 'ean13', 'ean8', 'upca', 'upce', 'qr'];
+        if (!validTypes.includes(type.toLowerCase())) {
+            setError("Type must be one of: code128, code39, ean13, ean8, upca, upce, qr");
+            return false;
+        }
+        
+        return true;
+    };
+
+    // Fetch barcodes from API
     useEffect(() => {
-        setBarcodes(dummyBarcodes);
+        const fetchBarcodes = async () => {
+            try {
+                setLoading(true);
+                const response = await getAllBarcodes();
+                if (response.success) {
+                    setBarcodes(response.barcodes || []);
+                } else {
+                    setError(response.message || "Failed to fetch barcodes");
+                }
+            } catch (error) {
+                setError(error.message || "Network error while fetching barcodes");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchBarcodes();
     }, []);
 
     const handleOpenModal = () => {
         setForm({ count: 1, batchId: "", type: "" });
         setShowModal(true);
         setSuccessMsg("");
+        setError("");
     };
 
     const handleCloseModal = () => {
         setShowModal(false);
         setGenerating(false);
         setSuccessMsg("");
+        setError("");
     };
 
     const handleFormChange = (e) => {
         const { name, value } = e.target;
         setForm((prev) => ({ ...prev, [name]: value }));
+        // Clear error when user starts typing
+        if (error) setError("");
     };
 
-    const handleGenerate = (e) => {
+    const handleGenerate = async (e) => {
         e.preventDefault();
+        
+        if (!validateForm()) {
+            return;
+        }
+        
         setGenerating(true);
         setError("");
         setSuccessMsg("");
-        // Simulate barcode generation
-        setTimeout(() => {
-            const newBarcodes = [];
-            for (let i = 0; i < Number(form.count); i++) {
-                newBarcodes.push({
-                    id: barcodes.length + i + 1,
-                    code: `BCODE${(barcodes.length + i + 1).toString().padStart(3, "0")}`,
-                    batchId: form.batchId,
-                    type: form.type,
-                    isUsed: false,
-                    createdAt: new Date().toISOString(),
-                    barcodeImage: null,
-                });
+        
+        try {
+            const response = await generateBarcodes({
+                count: parseInt(form.count),
+                batchId: parseInt(form.batchId),
+                type: form.type.toLowerCase()
+            });
+            
+            if (response.success) {
+                setSuccessMsg(`${form.count} barcodes generated successfully!`);
+                setForm({ count: 1, batchId: "", type: "" });
+                
+                // Refresh the barcodes list
+                const refreshResponse = await getAllBarcodes();
+                if (refreshResponse.success) {
+                    setBarcodes(refreshResponse.barcodes || []);
+                }
+            } else {
+                setError(response.message || "Failed to generate barcodes");
             }
-            setBarcodes((prev) => [...prev, ...newBarcodes]);
-            setSuccessMsg("Barcodes generated successfully (dummy mode)");
-            setForm({ count: 1, batchId: "", type: "" });
+        } catch (error) {
+            setError(error.message || "Network error while generating barcodes");
+        } finally {
             setGenerating(false);
-        }, 800);
+        }
     };
 
     // Filter barcodes by code, batchId, or type
@@ -180,38 +249,56 @@ const Barcode = () => {
                 </div>
             </div>
             <hr />
-            <table style={tableStyle}>
-                <thead>
-                    <tr>
-                        <th style={thStyle}>ID</th>
-                        <th style={thStyle}>Code</th>
-                        <th style={thStyle}>Batch ID</th>
-                        <th style={thStyle}>Type</th>
-                        <th style={thStyle}>Used?</th>
-                        <th style={thStyle}>Created At</th>
-                        <th style={thStyle}>Barcode Image</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {filteredBarcodes.map((b) => (
-                        <tr key={b.id}>
-                            <td style={tdStyle}>{b.id}</td>
-                            <td style={tdStyle}>{b.code}</td>
-                            <td style={tdStyle}>{b.batchId}</td>
-                            <td style={tdStyle}>{b.type}</td>
-                            <td style={tdStyle}>{b.isUsed ? "Yes" : "No"}</td>
-                            <td style={tdStyle}>{b.createdAt ? new Date(b.createdAt).toLocaleString() : ""}</td>
-                            <td style={tdStyle}>
-                                {b.barcodeImage ? (
-                                    <img src={b.barcodeImage} alt="barcode" style={{ height: 40 }} />
-                                ) : (
-                                    <span style={{ color: '#aaa' }}>N/A</span>
-                                )}
-                            </td>
+            {loading ? (
+                <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
+                    Loading barcodes...
+                </div>
+            ) : error ? (
+                <div style={{ textAlign: "center", padding: "40px", color: "red" }}>
+                    {error}
+                </div>
+            ) : (
+                <table style={tableStyle}>
+                    <thead>
+                        <tr>
+                            <th style={thStyle}>ID</th>
+                            <th style={thStyle}>Code</th>
+                            <th style={thStyle}>Batch ID</th>
+                            <th style={thStyle}>Type</th>
+                            <th style={thStyle}>Used?</th>
+                            <th style={thStyle}>Created At</th>
+                            <th style={thStyle}>Barcode Image</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {filteredBarcodes.length === 0 ? (
+                            <tr>
+                                <td colSpan="7" style={{ ...tdStyle, textAlign: "center", color: "#666" }}>
+                                    {search ? "No barcodes found matching your search." : "No barcodes available."}
+                                </td>
+                            </tr>
+                        ) : (
+                            filteredBarcodes.map((b) => (
+                                <tr key={b.id}>
+                                    <td style={tdStyle}>{b.id}</td>
+                                    <td style={tdStyle}>{b.code}</td>
+                                    <td style={tdStyle}>{b.batchId}</td>
+                                    <td style={tdStyle}>{b.type}</td>
+                                    <td style={tdStyle}>{b.isUsed ? "Yes" : "No"}</td>
+                                    <td style={tdStyle}>{b.createdAt ? new Date(b.createdAt).toLocaleString() : ""}</td>
+                                    <td style={tdStyle}>
+                                        {b.barcodeImage ? (
+                                            <img src={`data:image/png;base64,${b.barcodeImage}`} alt="barcode" style={{ height: 40 }} />
+                                        ) : (
+                                            <span style={{ color: '#aaa' }}>N/A</span>
+                                        )}
+                                    </td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
+            )}
             {/* Modal Popup for Generate Barcode */}
             {showModal && (
                 <div style={{
@@ -237,38 +324,48 @@ const Barcode = () => {
                         <h4 style={{ marginBottom: "16px", color: "#4caf50" }}>Generate Barcodes</h4>
                         <form onSubmit={handleGenerate}>
                             <div style={{ marginBottom: 16 }}>
-                                <label>Count: </label>
+                                <label>Count (1-100): </label>
                                 <input
                                     type="number"
                                     name="count"
                                     min={1}
+                                    max={100}
                                     value={form.count}
                                     onChange={handleFormChange}
                                     required
-                                    style={{ width: 60, marginLeft: 8 }}
+                                    style={{ width: 80, marginLeft: 8, padding: "4px 8px" }}
                                 />
                             </div>
                             <div style={{ marginBottom: 16 }}>
-                                <label>Batch ID: </label>
+                                <label>Batch ID (positive integer): </label>
                                 <input
-                                    type="text"
+                                    type="number"
                                     name="batchId"
+                                    min={1}
                                     value={form.batchId}
                                     onChange={handleFormChange}
                                     required
-                                    style={{ width: 120, marginLeft: 8 }}
+                                    style={{ width: 120, marginLeft: 8, padding: "4px 8px" }}
                                 />
                             </div>
                             <div style={{ marginBottom: 24 }}>
                                 <label>Type: </label>
-                                <input
-                                    type="text"
+                                <select
                                     name="type"
                                     value={form.type}
                                     onChange={handleFormChange}
                                     required
-                                    style={{ width: 120, marginLeft: 8 }}
-                                />
+                                    style={{ width: 140, marginLeft: 8, padding: "4px 8px" }}
+                                >
+                                    <option value="">Select Type</option>
+                                    <option value="code128">Code 128</option>
+                                    <option value="code39">Code 39</option>
+                                    <option value="ean13">EAN-13</option>
+                                    <option value="ean8">EAN-8</option>
+                                    <option value="upca">UPC-A</option>
+                                    <option value="upce">UPC-E</option>
+                                    <option value="qr">QR Code</option>
+                                </select>
                             </div>
                             {error && <div style={{ color: "red", marginBottom: 8 }}>{error}</div>}
                             {successMsg && <div style={{ color: "green", marginBottom: 8 }}>{successMsg}</div>}
