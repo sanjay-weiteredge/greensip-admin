@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 
 const initialQueries = [
-    { id: 1, user: "Alice Smith", contact: "alice@example.com", reason: "Unable to login", status: "Pending" },
-    { id: 2, user: "Bob Johnson", contact: "bob@example.com", reason: "Payment not processed", status: "Resolved" },
-    { id: 3, user: "Charlie Lee", contact: "charlie@example.com", reason: "App crashes on start", status: "Rejected" },
-    { id: 4, user: "Diana Prince", contact: "diana@example.com", reason: "Feature request: Dark mode", status: "Pending" },
-    { id: 5, user: "Evan Wright", contact: "evan@example.com", reason: "Incorrect profile info", status: "Pending" },
+    // { id: 1, user: "Alice Smith", contact: "alice@example.com", reason: "Unable to login", status: "Pending" },
+    // { id: 2, user: "Bob Johnson", contact: "bob@example.com", reason: "Payment not processed", status: "Resolved" },
+    // { id: 3, user: "Charlie Lee", contact: "charlie@example.com", reason: "App crashes on start", status: "Rejected" },
+    // { id: 4, user: "Diana Prince", contact: "diana@example.com", reason: "Feature request: Dark mode", status: "Pending" },
+    // { id: 5, user: "Evan Wright", contact: "evan@example.com", reason: "Incorrect profile info", status: "Pending" },
 ];
 
 const tableStyle = {
@@ -138,49 +138,85 @@ const SupportQuery = () => {
                 </div>
             </div>
             <hr />
-            <table style={tableStyle}>
-                <thead>
-                    <tr>
-                        <th style={thStyle}>User</th>
-                        <th style={thStyle}>Contact</th>
-                        <th style={thStyle}>Reason</th>
-                        <th style={thStyle}>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {filteredQueries.map((q) => (
-                        <tr key={q.id}>
-                            <td style={tdStyle}>{q.user}</td>
-                            <td style={tdStyle}>{q.contact}</td>
-                            <td style={tdStyle}>{q.reason}</td>
-                            <td style={tdStyle}>
-                                <select
-                                    value={q.status}
-                                    onChange={e => handleStatusChange(q.id, e.target.value)}
-                                    style={{
-                                        ...statusDropdownStyle,
-                                        background: statusColors[q.status].background,
-                                        color: statusColors[q.status].color,
-                                        borderColor: statusColors[q.status].border,
-                                    }}
-                                    onFocus={e => e.target.style.boxShadow = '0 0 0 2px #b7e3bc'}
-                                    onBlur={e => e.target.style.boxShadow = statusDropdownStyle.boxShadow}
-                                >
-                                    <option value="Pending" style={{ background: statusColors.Pending.background, color: statusColors.Pending.color }}>
-                                        Pending
-                                    </option>
-                                    <option value="Resolved" style={{ background: statusColors.Resolved.background, color: statusColors.Resolved.color }}>
-                                        Resolved
-                                    </option>
-                                    <option value="Rejected" style={{ background: statusColors.Rejected.background, color: statusColors.Rejected.color }}>
-                                        Rejected
-                                    </option>
-                                </select>
-                            </td>
+            {filteredQueries.length === 0 ? (
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: '80vh',
+                    borderRadius: 12,
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
+                    margin: '40px 0',
+                }}>
+                    <img src={require('../assets/image/help_support.svg').default} alt="No queries" style={{ width: 120, marginBottom: 24, opacity: 1 }} className="bounce" />
+                    <h2 style={{ fontSize: '28px',color: '#333',marginBottom: '12px',fontWeight: '600' }}>No support queries yet</h2>
+                    <p style={{ color: '#666', fontSize: 17, marginBottom: 28, textAlign: 'center', maxWidth: 400 }}>
+                        There are currently no support queries in the system. Queries will appear here once they are submitted.
+                    </p>
+                    <button
+                        style={{
+                            background: '#4caf50',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: 8,
+                            padding: '12px 36px',
+                            fontSize: 17,
+                            fontWeight: 600,
+                            boxShadow: '0 1px 2px rgba(0,0,0,0.07)',
+                            cursor: 'pointer',
+                            transition: 'background 0.2s',
+                        }}
+                        onClick={() => { setSearch(''); setQueries(initialQueries); }}
+                    >
+                        Refresh
+                    </button>
+                </div>
+            ) : (
+                <table style={tableStyle}>
+                    <thead>
+                        <tr>
+                            <th style={thStyle}>User</th>
+                            <th style={thStyle}>Contact</th>
+                            <th style={thStyle}>Reason</th>
+                            <th style={thStyle}>Status</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {filteredQueries.map((q) => (
+                            <tr key={q.id}>
+                                <td style={tdStyle}>{q.user}</td>
+                                <td style={tdStyle}>{q.contact}</td>
+                                <td style={tdStyle}>{q.reason}</td>
+                                <td style={tdStyle}>
+                                    <select
+                                        value={q.status}
+                                        onChange={e => handleStatusChange(q.id, e.target.value)}
+                                        style={{
+                                            ...statusDropdownStyle,
+                                            background: statusColors[q.status].background,
+                                            color: statusColors[q.status].color,
+                                            borderColor: statusColors[q.status].border,
+                                        }}
+                                        onFocus={e => e.target.style.boxShadow = '0 0 0 2px #b7e3bc'}
+                                        onBlur={e => e.target.style.boxShadow = statusDropdownStyle.boxShadow}
+                                    >
+                                        <option value="Pending" style={{ background: statusColors.Pending.background, color: statusColors.Pending.color }}>
+                                            Pending
+                                        </option>
+                                        <option value="Resolved" style={{ background: statusColors.Resolved.background, color: statusColors.Resolved.color }}>
+                                            Resolved
+                                        </option>
+                                        <option value="Rejected" style={{ background: statusColors.Rejected.background, color: statusColors.Rejected.color }}>
+                                            Rejected
+                                        </option>
+                                    </select>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )}
         </div>
     );
 };
