@@ -100,15 +100,16 @@ const Home = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         style={{
-          fontSize: "30px",
+          fontSize: "20px",
           fontWeight: "bold",
           color: "#2e7d32",
-          marginBottom: "40px",
-          textAlign: "center",
+          marginBottom: "20px",
+          textAlign: "left",
         }}
       >
         Dashboard Overview
       </motion.h2>
+      <hr style={{ marginBottom: "20px" }} />
 
       <div
         style={{

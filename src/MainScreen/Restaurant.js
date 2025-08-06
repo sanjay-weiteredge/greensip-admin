@@ -1,16 +1,17 @@
 import React, { useState } from "react";
+import restaurant from '../assets/image/restaurant.svg';
 
 const initialRestaurants = [
-    { id: 1, name: "Green Leaf Diner", email: "contact@greenleaf.com", contact: "9876543210", address: "123 Maple St, Springfield" },
-    { id: 2, name: "Urban Bites", email: "info@urbanbites.com", contact: "9123456780", address: "456 Oak Ave, Riverdale" },
-    { id: 3, name: "Sunset Grill", email: "hello@sunsetgrill.com", contact: "9988776655", address: "789 Pine Rd, Centerville" },
-    { id: 4, name: "Oceanic Eats", email: "support@oceaniceats.com", contact: "9090909090", address: "321 Elm St, Metropolis" },
-    { id: 5, name: "Mountain View Cafe", email: "mountain@viewcafe.com", contact: "9001122334", address: "654 Cedar Ave, Gotham" },
-    { id: 6, name: "City Spice", email: "cityspice@food.com", contact: "9112233445", address: "987 Birch Blvd, Star City" },
-    { id: 7, name: "Riverbank Restaurant", email: "riverbank@dine.com", contact: "9223344556", address: "159 Spruce Dr, Smallville" },
-    { id: 8, name: "The Food Court", email: "info@foodcourt.com", contact: "9334455667", address: "753 Willow Ln, Hill Valley" },
-    { id: 9, name: "Taste Junction", email: "contact@tastejunction.com", contact: "9445566778", address: "852 Aspen Ct, River City" },
-    { id: 10, name: "Bistro Bliss", email: "hello@bistrobliss.com", contact: "9556677889", address: "951 Poplar St, Emerald City" },
+    // { id: 1, name: "Green Leaf Diner", email: "contact@greenleaf.com", contact: "9876543210", address: "123 Maple St, Springfield" },
+    // { id: 2, name: "Urban Bites", email: "info@urbanbites.com", contact: "9123456780", address: "456 Oak Ave, Riverdale" },
+    // { id: 3, name: "Sunset Grill", email: "hello@sunsetgrill.com", contact: "9988776655", address: "789 Pine Rd, Centerville" },
+    // { id: 4, name: "Oceanic Eats", email: "support@oceaniceats.com", contact: "9090909090", address: "321 Elm St, Metropolis" },
+    // { id: 5, name: "Mountain View Cafe", email: "mountain@viewcafe.com", contact: "9001122334", address: "654 Cedar Ave, Gotham" },
+    // { id: 6, name: "City Spice", email: "cityspice@food.com", contact: "9112233445", address: "987 Birch Blvd, Star City" },
+    // { id: 7, name: "Riverbank Restaurant", email: "riverbank@dine.com", contact: "9223344556", address: "159 Spruce Dr, Smallville" },
+    // { id: 8, name: "The Food Court", email: "info@foodcourt.com", contact: "9334455667", address: "753 Willow Ln, Hill Valley" },
+    // { id: 9, name: "Taste Junction", email: "contact@tastejunction.com", contact: "9445566778", address: "852 Aspen Ct, River City" },
+    // { id: 10, name: "Bistro Bliss", email: "hello@bistrobliss.com", contact: "9556677889", address: "951 Poplar St, Emerald City" },
 ];
 
 const tableStyle = {
@@ -246,40 +247,76 @@ const Restaurant = () => {
            </div>
             </div>
             <hr />
-            <table style={tableStyle}>
-                <thead>
-                    <tr>
-                        <th style={thStyle}>ID</th>
-                        <th style={thStyle}>Name</th>
-                        <th style={thStyle}>Email</th>
-                        <th style={thStyle}>Contact</th>
-                        <th style={thStyle}>Address</th>
-                        <th style={thStyle}>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {filteredRestaurants.map((r) => (
-                        <tr key={r.id}>
-                            <td style={tdStyle}>{r.id}</td>
-                            <td style={tdStyle}>{r.name}</td>
-                            <td style={tdStyle}>{r.email}</td>
-                            <td style={tdStyle}>{r.contact}</td>
-                            <td style={tdStyle}>{r.address}</td>
-                            <td style={tdStyle}>
-                                <div style={actionStyle}>
-                                    <button
-                                        style={deleteIconStyle}
-                                        title="Delete"
-                                        onClick={() => handleDeleteClick(r.id)}
-                                    >
-                                        🗑️
-                                    </button>
-                                </div>
-                            </td>
+            {filteredRestaurants.length === 0 ? (
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: '80vh',
+                    borderRadius: 12,
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
+                    margin: '40px 0',
+                }}>
+                    <img src={restaurant} alt="No restaurants" style={{ width: 120, marginBottom: 24, opacity: 0.8 }} className="bounce" />
+                    <h2 style={{ fontSize: '28px',color: '#333',marginBottom: '12px',fontWeight: '600' }}>No restaurants yet</h2>
+                    <p style={{ color: '#666', fontSize: 17, marginBottom: 28, textAlign: 'center', maxWidth: 400 }}>
+                        There are currently no restaurants in the system. Restaurants will appear here once they are added.
+                    </p>
+                    <button
+                        style={{
+                            background: '#4caf50',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: 8,
+                            padding: '12px 36px',
+                            fontSize: 17,
+                            fontWeight: 600,
+                            boxShadow: '0 1px 2px rgba(0,0,0,0.07)',
+                            cursor: 'pointer',
+                            transition: 'background 0.2s',
+                        }}
+                        onClick={() => { setSearch(''); setRestaurants(initialRestaurants); }}
+                    >
+                        Refresh
+                    </button>
+                </div>
+            ) : (
+                <table style={tableStyle}>
+                    <thead>
+                        <tr>
+                            <th style={thStyle}>ID</th>
+                            <th style={thStyle}>Name</th>
+                            <th style={thStyle}>Email</th>
+                            <th style={thStyle}>Contact</th>
+                            <th style={thStyle}>Address</th>
+                            <th style={thStyle}>Action</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {filteredRestaurants.map((r) => (
+                            <tr key={r.id}>
+                                <td style={tdStyle}>{r.id}</td>
+                                <td style={tdStyle}>{r.name}</td>
+                                <td style={tdStyle}>{r.email}</td>
+                                <td style={tdStyle}>{r.contact}</td>
+                                <td style={tdStyle}>{r.address}</td>
+                                <td style={tdStyle}>
+                                    <div style={actionStyle}>
+                                        <button
+                                            style={deleteIconStyle}
+                                            title="Delete"
+                                            onClick={() => handleDeleteClick(r.id)}
+                                        >
+                                            🗑️
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )}
             {/* Modal Popup for Delete */}
             {showModal && (
                 <div style={modalOverlayStyle}>

@@ -6,6 +6,7 @@ import NavCouponIcon from "../assets/image/nav_couponIcon.svg";
 import NavServiceProviderIcon from "../assets/image/nav_serviceProviderIcon.svg";
 import NavOrdersIcon from "../assets/image/ordersNavIcon.svg";
 import SupportIcon from "../assets/image/help_support.svg";
+import ProductsNavIcon from "../assets/image/productsNavIcon.svg";
 
 
 export const navBarCoordinationOptions = [
@@ -30,7 +31,10 @@ export const navBarCoordinationOptions = [
       icon: NavCouponIcon,
       label: "Barcode",
     },
-    
+    {
+      icon: ProductsNavIcon,
+      label: "Ads Management",
+    },
     {
       icon: NavOrdersIcon,
       label: "Support",
@@ -39,4 +43,5 @@ export const navBarCoordinationOptions = [
       icon: SupportIcon,
       label: "Logout",
     },
+  
   ];
