@@ -132,9 +132,9 @@ const Barcode = () => {
         }
         
         // Validate type format (alphanumeric and common barcode types)
-        const validTypes = ['code128', 'code39', 'ean13', 'ean8', 'upca', 'upce', 'qr'];
+        const validTypes = ['code128','code39', 'ean13', 'ean8', 'upca', 'upce', 'qr'];
         if (!validTypes.includes(type.toLowerCase())) {
-            setError("Type must be one of: code128, code39, ean13, ean8, upca, upce, qr");
+            setError("Type must be one of: code128,code39, ean13, ean8, upca, upce, qr");
             return false;
         }
         
@@ -358,10 +358,10 @@ const Barcode = () => {
                                     style={{ width: 140, marginLeft: 8, padding: "4px 8px" }}
                                 >
                                     <option value="">Select Type</option>
-                                    <option value="code128">Code 128</option>
-                                    <option value="code39">Code 39</option>
-                                    <option value="ean13">EAN-13</option>
-                                    <option value="ean8">EAN-8</option>
+                                    <option value="Code128">Code 128</option>
+                                    <option value="Code39">Code 39</option>
+                                    <option value="Ean13">EAN-13</option>
+                                    <option value="Ean8">EAN-8</option>
                                     <option value="upca">UPC-A</option>
                                     <option value="upce">UPC-E</option>
                                     <option value="qr">QR Code</option>
