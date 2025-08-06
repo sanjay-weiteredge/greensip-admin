@@ -10,6 +10,7 @@ import BarcodePage from "../MainScreen/barcodePage";
 import SupportReq from "../MainScreen/SupportReq";
 import CreateCouponPage from "../MainScreen/CreateCouponPage";
 import PrivateRoute from "./privateRoute";
+import AdsManagement from "../MainScreen/AdsManagement";
 
 export default function AppRoutes() {
 
@@ -94,7 +95,16 @@ export default function AppRoutes() {
         path="/business-partner"
         element={
           <PrivateRoute>
-            <RestaurantPage/>
+            <RestaurantPage />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/ads-management"
+        element={
+          <PrivateRoute>
+            <AdsManagement />
           </PrivateRoute>
         }
       />
