@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import restaurant from '../assets/image/restaurant.svg';
+import { restaurantService } from '../services/resturant';
 
 const initialRestaurants = [
     // { id: 1, name: "Green Leaf Diner", email: "contact@greenleaf.com", contact: "9876543210", address: "123 Maple St, Springfield" },
@@ -166,7 +167,7 @@ const searchIconStyle = {
 };
 
 const Restaurant = () => {
-    const [restaurants, setRestaurants] = useState(initialRestaurants);
+    const [restaurants, setRestaurants] = useState([]);
     const [deleteRestaurantId, setDeleteRestaurantId] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [search, setSearch] = useState("");
@@ -174,6 +175,46 @@ const Restaurant = () => {
     const [newVendor, setNewVendor] = useState({ name: '', email: '', password: '', phone: '', address: '' });
     const [addError, setAddError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingRestaurants, setIsLoadingRestaurants] = useState(true);
+    const [loadError, setLoadError] = useState('');
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [deletedRestaurantName, setDeletedRestaurantName] = useState('');
+    const [createdRestaurantName, setCreatedRestaurantName] = useState('');
+
+    // Load restaurants on component mount
+    useEffect(() => {
+        loadRestaurants();
+    }, []);
+
+    const loadRestaurants = async () => {
+        try {
+            setIsLoadingRestaurants(true);
+            setLoadError('');
+            const response = await restaurantService.getAllRestaurants();
+            
+            if (response.success) {
+                // Transform the data to match the expected format
+                const transformedRestaurants = response.restaurants.map(restaurant => ({
+                    id: restaurant.id,
+                    name: restaurant.name,
+                    email: restaurant.email,
+                    contact: restaurant.phone,
+                    address: restaurant.address,
+                    createdAt: restaurant.createdAt
+                }));
+                setRestaurants(transformedRestaurants);
+            } else {
+                setLoadError(response.message || 'Failed to load restaurants');
+            }
+        } catch (error) {
+            console.error('Error loading restaurants:', error);
+            setLoadError(error.message || 'Failed to load restaurants. Please try again.');
+        } finally {
+            setIsLoadingRestaurants(false);
+        }
+    };
 
     const handleDeleteClick = (restaurantId) => {
         setDeleteRestaurantId(restaurantId);
@@ -185,10 +226,36 @@ const Restaurant = () => {
         setDeleteRestaurantId(null);
     };
 
-    const handleConfirmDelete = () => {
-        setRestaurants((prev) => prev.filter((r) => r.id !== deleteRestaurantId));
-        setShowModal(false);
-        setDeleteRestaurantId(null);
+    const handleCloseSuccessModal = () => {
+        setShowSuccessModal(false);
+        setSuccessMessage('');
+        setDeletedRestaurantName('');
+        setCreatedRestaurantName('');
+    };
+
+    const handleConfirmDelete = async () => {
+        try {
+            // Get the restaurant name before deleting
+            const restaurantToDelete = restaurants.find(r => r.id === deleteRestaurantId);
+            setDeletedRestaurantName(restaurantToDelete ? restaurantToDelete.name : "");
+            
+            const response = await restaurantService.deleteRestaurant(deleteRestaurantId);
+            
+            if (response.success) {
+                // Remove the restaurant from local state
+                setRestaurants((prev) => prev.filter((r) => r.id !== deleteRestaurantId));
+                setShowModal(false);
+                setDeleteRestaurantId(null);
+                
+                // Show success modal
+                setSuccessMessage('deleted');
+                setShowSuccessModal(true);
+            } else {
+                console.error('Failed to delete restaurant:', response.message);
+            }
+        } catch (error) {
+            console.error('Error deleting restaurant:', error);
+        }
     };
 
     const handleAddVendorChange = (e) => {
@@ -196,26 +263,54 @@ const Restaurant = () => {
         setNewVendor((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleAddVendor = (e) => {
+    const handleAddVendor = async (e) => {
         e.preventDefault();
         // Basic validation
         if (!newVendor.name || !newVendor.email || !newVendor.password || !newVendor.phone || !newVendor.address) {
             setAddError('All fields are required.');
             return;
         }
-        setRestaurants((prev) => [
-            ...prev,
-            {
-                id: prev.length ? prev[prev.length - 1].id + 1 : 1,
+
+        try {
+            setIsLoading(true);
+            setAddError('');
+            const response = await restaurantService.signup({
                 name: newVendor.name,
                 email: newVendor.email,
-                contact: newVendor.phone,
-                address: newVendor.address,
-            },
-        ]);
-        setShowAddModal(false);
-        setNewVendor({ name: '', email: '', password: '', phone: '', address: '' });
-        setAddError('');
+                password: newVendor.password,
+                phone: newVendor.phone,
+                address: newVendor.address
+            });
+
+            if (response.success) {
+                // Add the new restaurant to the local state
+                setRestaurants((prev) => [
+                    ...prev,
+                    {
+                        id: response.restaurant.id,
+                        name: response.restaurant.name,
+                        email: response.restaurant.email,
+                        contact: response.restaurant.phone,
+                        address: response.restaurant.address,
+                    },
+                ]);
+                setShowAddModal(false);
+                setNewVendor({ name: '', email: '', password: '', phone: '', address: '' });
+                setAddError('');
+                
+                // Show success modal
+                setCreatedRestaurantName(response.restaurant.name);
+                setSuccessMessage('created');
+                setShowSuccessModal(true);
+            } else {
+                setAddError(response.message || 'Failed to create vendor');
+            }
+        } catch (error) {
+            console.error('Error creating vendor:', error);
+            setAddError(error.message || 'Failed to create vendor. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     // Filter restaurants by search query (name, email, or contact)
@@ -247,7 +342,58 @@ const Restaurant = () => {
            </div>
             </div>
             <hr />
-            {filteredRestaurants.length === 0 ? (
+            {isLoadingRestaurants ? (
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: '60vh',
+                    borderRadius: 12,
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
+                    margin: '40px 0',
+                }}>
+                    <div style={{ fontSize: '24px', marginBottom: '16px' }}>⏳</div>
+                    <h2 style={{ fontSize: '24px', color: '#333', marginBottom: '12px', fontWeight: '600' }}>Loading restaurants...</h2>
+                    <p style={{ color: '#666', fontSize: 16, textAlign: 'center' }}>
+                        Please wait while we fetch the restaurant data.
+                    </p>
+                </div>
+            ) : loadError ? (
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: '60vh',
+                    borderRadius: 12,
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
+                    margin: '40px 0',
+                }}>
+                    <div style={{ fontSize: '24px', marginBottom: '16px', color: '#e53935' }}>⚠️</div>
+                    <h2 style={{ fontSize: '24px', color: '#333', marginBottom: '12px', fontWeight: '600' }}>Error loading restaurants</h2>
+                    <p style={{ color: '#666', fontSize: 16, marginBottom: 28, textAlign: 'center', maxWidth: 400 }}>
+                        {loadError}
+                    </p>
+                    <button
+                        style={{
+                            background: '#4caf50',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: 8,
+                            padding: '12px 36px',
+                            fontSize: 16,
+                            fontWeight: 600,
+                            boxShadow: '0 1px 2px rgba(0,0,0,0.07)',
+                            cursor: 'pointer',
+                            transition: 'background 0.2s',
+                        }}
+                        onClick={loadRestaurants}
+                    >
+                        Try Again
+                    </button>
+                </div>
+            ) : filteredRestaurants.length === 0 ? (
                 <div style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -276,7 +422,7 @@ const Restaurant = () => {
                             cursor: 'pointer',
                             transition: 'background 0.2s',
                         }}
-                        onClick={() => { setSearch(''); setRestaurants(initialRestaurants); }}
+                        onClick={() => { setSearch(''); loadRestaurants(); }}
                     >
                         Refresh
                     </button>
@@ -529,27 +675,255 @@ const Restaurant = () => {
                                 </button>
                                 <button
                                     type="submit"
+                                    disabled={isLoading}
                                     style={{
                                         padding: '12px 36px',
                                         border: 'none',
                                         borderRadius: 10,
-                                        background: '#219653',
+                                        background: isLoading ? '#ccc' : '#219653',
                                         color: 'white',
                                         fontWeight: 700,
                                         fontSize: 17,
-                                        cursor: 'pointer',
+                                        cursor: isLoading ? 'not-allowed' : 'pointer',
                                         transition: 'background 0.2s',
                                     }}
-                                    onMouseOver={e => e.currentTarget.style.background = '#176b3f'}
-                                    onMouseOut={e => e.currentTarget.style.background = '#219653'}
+                                    onMouseOver={e => !isLoading && (e.currentTarget.style.background = '#176b3f')}
+                                    onMouseOut={e => !isLoading && (e.currentTarget.style.background = '#219653')}
                                 >
-                                    Add Vendor
+                                    {isLoading ? 'Creating...' : 'Add Vendor'}
                                 </button>
                             </div>
                         </form>
                     </div>
                 </div>
             )}
+
+            {/* Animated Success Modal */}
+            {showSuccessModal && (
+                <div
+                    style={{
+                        position: "fixed",
+                        top: 0,
+                        left: 0,
+                        width: "100vw",
+                        height: "100vh",
+                        background: "rgba(0,0,0,0.6)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        zIndex: 2000,
+                        backdropFilter: "blur(8px)",
+                        animation: "fadeIn 0.3s ease-out"
+                    }}
+                >
+                    <div
+                        style={{
+                            background: "linear-gradient(135deg, #ffffff 0%, #f8fff8 100%)",
+                            padding: "40px 32px",
+                            borderRadius: "20px",
+                            boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+                            minWidth: "480px",
+                            width: "90%",
+                            maxWidth: "520px",
+                            textAlign: "center",
+                            position: "relative",
+                            animation: "slideInUp 0.5s ease-out",
+                            border: "2px solid #e8f5e8"
+                        }}
+                    >
+                        {/* Success Icon Animation */}
+                        <div
+                            style={{
+                                width: "80px",
+                                height: "80px",
+                                background: "linear-gradient(135deg, #4caf50 0%, #45a049 100%)",
+                                borderRadius: "50%",
+                                margin: "0 auto 24px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                animation: "bounceIn 0.8s ease-out",
+                                boxShadow: "0 8px 32px rgba(76, 175, 80, 0.4)"
+                            }}
+                        >
+                            <span style={{ fontSize: "36px", color: "white", animation: "pulse 2s infinite" }}>
+                                {successMessage === 'created' ? '🎉' : '✅'}
+                            </span>
+                        </div>
+
+                        {/* Success Message */}
+                        <h2
+                            style={{
+                                color: "#2e7d32",
+                                margin: "0 0 16px 0",
+                                fontSize: "28px",
+                                fontWeight: "700",
+                                animation: "slideInUp 0.6s ease-out 0.2s both"
+                            }}
+                        >
+                            {successMessage === 'created' 
+                                ? '🎉 Vendor Created Successfully!' 
+                                : '✅ Vendor Deleted Successfully!'
+                            }
+                        </h2>
+
+                        <p
+                            style={{
+                                color: "#666",
+                                fontSize: "18px",
+                                margin: "0 0 32px 0",
+                                lineHeight: "1.5",
+                                animation: "slideInUp 0.6s ease-out 0.4s both"
+                            }}
+                        >
+                            {successMessage === 'created' 
+                                ? `The vendor "${createdRestaurantName}" has been successfully added to the system.`
+                                : `The vendor "${deletedRestaurantName}" has been permanently removed from the system.`
+                            }
+                        </p>
+
+                        {/* Stats Cards */}
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                gap: "16px",
+                                marginBottom: "32px",
+                                animation: "slideInUp 0.6s ease-out 0.6s both"
+                            }}
+                        >
+                            
+                            <div
+                                style={{
+                                    background: "linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)",
+                                    padding: "16px 20px",
+                                    borderRadius: "12px",
+                                    border: "1px solid #ff9800",
+                                    minWidth: "120px"
+                                }}
+                            >
+                                <div style={{ fontSize: "24px", fontWeight: "700", color: "#f57c00" }}>
+                                    {successMessage === 'created' ? createdRestaurantName : deletedRestaurantName}
+                                </div>
+                                <div style={{ fontSize: "12px", color: "#666", textTransform: "uppercase" }}>
+                                    {successMessage === 'created' ? 'Created' : 'Deleted'}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                gap: "16px",
+                                animation: "slideInUp 0.6s ease-out 0.8s both"
+                            }}
+                        >
+                            <button
+                                onClick={handleCloseSuccessModal}
+                                style={{
+                                    padding: "14px 28px",
+                                    border: "none",
+                                    borderRadius: "12px",
+                                    background: "linear-gradient(135deg, #4caf50 0%, #45a049 100%)",
+                                    color: "white",
+                                    cursor: "pointer",
+                                    fontSize: "16px",
+                                    fontWeight: "600",
+                                    transition: "all 0.3s ease",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "8px",
+                                    boxShadow: "0 4px 16px rgba(76, 175, 80, 0.3)"
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.target.style.transform = "translateY(-2px)";
+                                    e.target.style.boxShadow = "0 6px 20px rgba(76, 175, 80, 0.4)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.target.style.transform = "translateY(0)";
+                                    e.target.style.boxShadow = "0 4px 16px rgba(76, 175, 80, 0.3)";
+                                }}
+                            >
+                                <span>👍</span>
+                                Got It!
+                            </button>
+                        </div>
+
+                        {/* Decorative Elements */}
+                        <div
+                            style={{
+                                position: "absolute",
+                                top: "-10px",
+                                right: "-10px",
+                                width: "40px",
+                                height: "40px",
+                                background: "linear-gradient(135deg, #4caf50 0%, #45a049 100%)",
+                                borderRadius: "50%",
+                                animation: "pulse 2s infinite"
+                            }}
+                        />
+                        <div
+                            style={{
+                                position: "absolute",
+                                bottom: "-10px",
+                                left: "-10px",
+                                width: "30px",
+                                height: "30px",
+                                background: "linear-gradient(135deg, #81c784 0%, #66bb6a 100%)",
+                                borderRadius: "50%",
+                                animation: "pulse 2s infinite 0.5s"
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
+
+            {/* Add CSS animations */}
+            <style>
+                {`
+                    @keyframes fadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
+                    
+                    @keyframes slideInUp {
+                        from {
+                            opacity: 0;
+                            transform: translateY(30px) scale(0.9);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateY(0) scale(1);
+                        }
+                    }
+                    
+                    @keyframes bounceIn {
+                        0% {
+                            opacity: 0;
+                            transform: scale(0.3);
+                        }
+                        50% {
+                            opacity: 1;
+                            transform: scale(1.05);
+                        }
+                        70% {
+                            transform: scale(0.9);
+                        }
+                        100% {
+                            opacity: 1;
+                            transform: scale(1);
+                        }
+                    }
+                    
+                    @keyframes pulse {
+                        0% { transform: scale(1); }
+                        50% { transform: scale(1.1); }
+                        100% { transform: scale(1); }
+                    }
+                `}
+            </style>
         </div>
     );
 };

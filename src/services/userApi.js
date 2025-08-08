@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const BASE_URL = 'http://localhost:8000';
 
-// Create axios instance with default configuration
+
 const apiClient = axios.create({
   baseURL: BASE_URL,
   headers: {
@@ -10,7 +10,7 @@ const apiClient = axios.create({
   },
 });
 
-// Add request interceptor to include auth token
+
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');

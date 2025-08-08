@@ -34,3 +34,20 @@ export const getAllBarcodes = async () => {
     throw new Error(error.message || 'Network error while fetching barcodes');
   }
 };
+
+export const getBarcodeUsageCount = async () => {
+  try {
+    const response = await apiRequest('/barcode/usage-count', {
+      method: 'GET',
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to fetch barcode usage count');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    throw new Error(error.message || 'Network error while fetching barcode usage count');
+  }
+};
