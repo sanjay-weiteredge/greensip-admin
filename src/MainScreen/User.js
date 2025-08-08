@@ -165,6 +165,7 @@ const User = () => {
     const [showUserModal, setShowUserModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [deletingUserId, setDeletingUserId] = useState(null);
+    const [deletedUserName, setDeletedUserName] = useState("");
     const [initialLoad, setInitialLoad] = useState(true);
     
     // Pagination state
@@ -234,6 +235,10 @@ const User = () => {
             setDeletingUserId(deleteUserId);
             setShowModal(false);
             
+            // Get the user name before deleting
+            const userToDelete = users.find(u => u.id === deleteUserId);
+            setDeletedUserName(userToDelete ? userToDelete.name : "");
+            
             const response = await deleteUser(deleteUserId);
             
             if (response.success) {
@@ -264,6 +269,7 @@ const User = () => {
 
     const handleCloseSuccessModal = () => {
         setShowSuccessModal(false);
+        setDeletedUserName("");
     };
 
     const handlePageChange = (newPage) => {
@@ -651,46 +657,244 @@ const User = () => {
                 </div>
             )}
 
-            {/* Success Modal */}
+            {/* Animated Success Modal */}
             {showSuccessModal && (
-                <div style={modalOverlayStyle}>
-                    <div style={{
-                        ...modalContentStyle,
-                        background: "white",
-                        padding: "32px 24px",
-                        minWidth: "320px",
-                        textAlign: "center"
-                    }}>
-                        <div style={{
-                            fontSize: "48px",
-                            marginBottom: "16px",
-                            color: "#4caf50"
-                        }}>
-                            ✅
+                <div
+                    style={{
+                        position: "fixed",
+                        top: 0,
+                        left: 0,
+                        width: "100vw",
+                        height: "100vh",
+                        background: "rgba(0,0,0,0.6)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        zIndex: 2000,
+                        backdropFilter: "blur(8px)",
+                        animation: "fadeIn 0.3s ease-out"
+                    }}
+                >
+                    <div
+                        style={{
+                            background: "linear-gradient(135deg, #ffffff 0%, #f8fff8 100%)",
+                            padding: "40px 32px",
+                            borderRadius: "20px",
+                            boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+                            minWidth: "480px",
+                            width: "90%",
+                            maxWidth: "520px",
+                            textAlign: "center",
+                            position: "relative",
+                            animation: "slideInUp 0.5s ease-out",
+                            border: "2px solid #e8f5e8"
+                        }}
+                    >
+                        {/* Success Icon Animation */}
+                        <div
+                            style={{
+                                width: "80px",
+                                height: "80px",
+                                background: "linear-gradient(135deg, #4caf50 0%, #45a049 100%)",
+                                borderRadius: "50%",
+                                margin: "0 auto 24px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                animation: "bounceIn 0.8s ease-out",
+                                boxShadow: "0 8px 32px rgba(76, 175, 80, 0.4)"
+                            }}
+                        >
+                            <span style={{ fontSize: "36px", color: "white", animation: "pulse 2s infinite" }}>
+                                ✅
+                            </span>
                         </div>
-                        <h4 style={{ marginBottom: "16px", color: "#4caf50" }}>Success!</h4>
-                        <p style={{ marginBottom: "24px", color: "#666" }}>User deleted successfully.</p>
-                        <div style={modalButtonGroupStyle}>
+
+                        {/* Success Message */}
+                        <h2
+                            style={{
+                                color: "#2e7d32",
+                                margin: "0 0 16px 0",
+                                fontSize: "28px",
+                                fontWeight: "700",
+                                animation: "slideInUp 0.6s ease-out 0.2s both"
+                            }}
+                        >
+                            🎉 User Deleted Successfully!
+                        </h2>
+
+                        <p
+                            style={{
+                                color: "#666",
+                                fontSize: "18px",
+                                margin: "0 0 32px 0",
+                                lineHeight: "1.5",
+                                animation: "slideInUp 0.6s ease-out 0.4s both"
+                            }}
+                        >
+                            The user <span style={{ color: "#4caf50", fontWeight: "600" }}>"{deletedUserName}"</span> has been permanently removed from the system.
+                        </p>
+
+                        {/* Stats Cards */}
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                gap: "16px",
+                                marginBottom: "32px",
+                                animation: "slideInUp 0.6s ease-out 0.6s both"
+                            }}
+                        >
+                            <div
+                                style={{
+                                    background: "linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)",
+                                    padding: "16px 20px",
+                                    borderRadius: "12px",
+                                    border: "1px solid #4caf50",
+                                    minWidth: "120px"
+                                }}
+                            >
+                                <div style={{ fontSize: "24px", fontWeight: "700", color: "#2e7d32" }}>
+                                    {totalUsers - 1}
+                                </div>
+                                <div style={{ fontSize: "12px", color: "#666", textTransform: "uppercase" }}>
+                                    Remaining
+                                </div>
+                            </div>
+                            <div
+                                style={{
+                                    background: "linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)",
+                                    padding: "16px 20px",
+                                    borderRadius: "12px",
+                                    border: "1px solid #ff9800",
+                                    minWidth: "120px"
+                                }}
+                            >
+                                <div style={{ fontSize: "24px", fontWeight: "700", color: "#f57c00" }}>
+                                    {deletedUserName}
+                                </div>
+                                <div style={{ fontSize: "12px", color: "#666", textTransform: "uppercase" }}>
+                                    Deleted
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                gap: "16px",
+                                animation: "slideInUp 0.6s ease-out 0.8s both"
+                            }}
+                        >
                             <button
                                 onClick={handleCloseSuccessModal}
                                 style={{
-                                    padding: "8px 20px",
+                                    padding: "14px 28px",
                                     border: "none",
-                                    borderRadius: "4px",
-                                    background: "#4caf50",
+                                    borderRadius: "12px",
+                                    background: "linear-gradient(135deg, #4caf50 0%, #45a049 100%)",
                                     color: "white",
-                                    cursor: "pointer"
+                                    cursor: "pointer",
+                                    fontSize: "16px",
+                                    fontWeight: "600",
+                                    transition: "all 0.3s ease",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "8px",
+                                    boxShadow: "0 4px 16px rgba(76, 175, 80, 0.3)"
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.target.style.transform = "translateY(-2px)";
+                                    e.target.style.boxShadow = "0 6px 20px rgba(76, 175, 80, 0.4)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.target.style.transform = "translateY(0)";
+                                    e.target.style.boxShadow = "0 4px 16px rgba(76, 175, 80, 0.3)";
                                 }}
                             >
-                                OK
+                                <span>👍</span>
+                                Got It!
                             </button>
                         </div>
+
+                        {/* Decorative Elements */}
+                        <div
+                            style={{
+                                position: "absolute",
+                                top: "-10px",
+                                right: "-10px",
+                                width: "40px",
+                                height: "40px",
+                                background: "linear-gradient(135deg, #4caf50 0%, #45a049 100%)",
+                                borderRadius: "50%",
+                                animation: "pulse 2s infinite"
+                            }}
+                        />
+                        <div
+                            style={{
+                                position: "absolute",
+                                bottom: "-10px",
+                                left: "-10px",
+                                width: "30px",
+                                height: "30px",
+                                background: "linear-gradient(135deg, #81c784 0%, #66bb6a 100%)",
+                                borderRadius: "50%",
+                                animation: "pulse 2s infinite 0.5s"
+                            }}
+                        />
                     </div>
                 </div>
             )}
 
             {/* Modal Popup for User Details */}
             <UserDetailsModal user={selectedUser} open={showUserModal} onClose={handleCloseUserModal} />
+
+            {/* Add CSS animations */}
+            <style>
+                {`
+                    @keyframes fadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
+                    
+                    @keyframes slideInUp {
+                        from {
+                            opacity: 0;
+                            transform: translateY(30px) scale(0.9);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateY(0) scale(1);
+                        }
+                    }
+                    
+                    @keyframes bounceIn {
+                        0% {
+                            opacity: 0;
+                            transform: scale(0.3);
+                        }
+                        50% {
+                            opacity: 1;
+                            transform: scale(1.05);
+                        }
+                        70% {
+                            transform: scale(0.9);
+                        }
+                        100% {
+                            opacity: 1;
+                            transform: scale(1);
+                        }
+                    }
+                    
+                    @keyframes pulse {
+                        0% { transform: scale(1); }
+                        50% { transform: scale(1.1); }
+                        100% { transform: scale(1); }
+                    }
+                `}
+            </style>
         </div>
     );
 };

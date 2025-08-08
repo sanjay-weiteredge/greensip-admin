@@ -451,10 +451,10 @@ const Barcode = () => {
                                     {search ? "No barcodes found matching your search." : "No barcodes available."}
                                 </td>
                             </tr>
-                        ) : (
-                            filteredBarcodes.map((b) => (
+                                                ) : (
+                            filteredBarcodes.map((b, index) => (
                                 <tr key={b.id}>
-                                    <td style={tdStyle}>{b.id}</td>
+                                    <td style={tdStyle}>{index + 1}</td>
                                     <td style={tdStyle}>{b.code}</td>
                                     <td style={tdStyle}>{b.batchId}</td>
                                    
