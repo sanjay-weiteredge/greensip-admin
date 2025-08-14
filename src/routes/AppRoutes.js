@@ -11,6 +11,7 @@ import SupportReq from "../MainScreen/SupportReq";
 import CreateCouponPage from "../MainScreen/CreateCouponPage";
 import PrivateRoute from "./privateRoute";
 import AdsManagement from "../MainScreen/AdsManagement";
+import LocationManagement from "../MainScreen/locationManagement";
 
 export default function AppRoutes() {
 
@@ -54,6 +55,15 @@ export default function AppRoutes() {
           </PrivateRoute>
         }
       />
+       <Route
+        path="/Location"
+        element={
+          <PrivateRoute>
+            <LocationManagement/>
+          </PrivateRoute>
+        }
+      />
+
 
       <Route
         path="/coupon/create"

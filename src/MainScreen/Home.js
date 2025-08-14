@@ -15,7 +15,7 @@ import { getBarcodeUsageCount } from '../services/barcode';
 const cardData = [
   { label: "Registered Users", count: 0, icon: <FaUserFriends />, color: "#4caf50", key: "users" },
   // { label: "Ads Play", count: 0, icon: <FaPlay />, color: "#2196f3", key: "ads" },
-  { label: "Bottle Destroyed", count: 0, icon: <FaTrashAlt />, color: "#f44336", key: "barcodes" },
+  { label: "Bottle Deployed", count: 0, icon: <FaTrashAlt />, color: "#f44336", key: "barcodes" },
   { label: "Total Business Partners", count: 0, icon: <FaBuilding />, color: "#9c27b0", key: "vendors" },
   { label: "Total Machines", count: 0, icon: <FaTools />, color: "#ff9800", key: "machines" },
   { label: "Query Raised", count: 0, icon: <FaQuestionCircle />, color: "#607d8b", key: "queries" },

@@ -90,6 +90,7 @@ const closeButtonHoverStyle = {
 };
 
 const UserDetailsModal = ({ user, open, onClose }) => {
+    console.log(user);
     const [isHover, setIsHover] = useState(false);
     if (!open || !user) return null;
     const defaultAvatar =
@@ -134,6 +135,10 @@ const UserDetailsModal = ({ user, open, onClose }) => {
                         <div style={{ display: "flex" }}>
                             <div style={detailLabelStyle}>Email :</div>
                             <div style={detailValueStyle}>{user.email}</div>
+                        </div>
+                        <div style={{ display: "flex" }}>
+                            <div style={detailLabelStyle}>Carbon Credits :</div>
+                            <div style={detailValueStyle}>{user.totalPoints || 0}</div>
                         </div>
                     </div>
                 </div>

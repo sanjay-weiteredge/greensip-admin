@@ -7,6 +7,7 @@ import NavServiceProviderIcon from "../assets/image/nav_serviceProviderIcon.svg"
 import NavOrdersIcon from "../assets/image/ordersNavIcon.svg";
 import SupportIcon from "../assets/image/help_support.svg";
 import ProductsNavIcon from "../assets/image/productsNavIcon.svg";
+import LocationIcon from "../assets/image/location.png";
 
 
 export const navBarCoordinationOptions = [
@@ -34,6 +35,10 @@ export const navBarCoordinationOptions = [
     {
       icon: ProductsNavIcon,
       label: "Ads Management",
+    },
+    {
+      icon: LocationIcon,
+      label: "Location",
     },
     {
       icon: NavOrdersIcon,

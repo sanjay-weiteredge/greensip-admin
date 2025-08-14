@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8000/admin";
+const BASE_URL = "http://13.53.50.114:8000/admin";
 
 export const createCoupon = async (couponData, imageFile) => {
   try {
@@ -11,7 +11,7 @@ export const createCoupon = async (couponData, imageFile) => {
     if (imageFile) {
       formData.append('couponImage', imageFile);
     }
-    const response = await fetch('http://localhost:8000/admin/coupons', {
+    const response = await fetch('http://13.53.50.114:8000/admin/coupons', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`,

@@ -274,7 +274,7 @@ const SupportQuery = () => {
                         textAlign: 'left'
                     }}>
                         <strong>Debug Info:</strong><br />
-                        URL: http://localhost:8000/admin/support-requests<br />
+                        URL: http://13.53.50.114:8000/admin/support-requests<br />
                         Method: GET<br />
                         Status: 500 Internal Server Error<br />
                         <br />
