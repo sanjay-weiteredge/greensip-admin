@@ -135,13 +135,13 @@ const Home = () => {
          usersResponse,
          adsResponse,
          vendorsResponse,
-         machinesResponse,
+         locationsResponse,
          queriesResponse
        ] = await Promise.all([
          apiRequest('/user/user-list?page=1&limit=1', { method: 'GET' }),
          apiRequest('/ads/all?page=1&limit=1', { method: 'GET' }),
          apiRequest('/restaurant/allVendors', { method: 'GET' }),
-         apiRequest('/machines/all?page=1&limit=1', { method: 'GET' }),
+         apiRequest('/admin/locations?page=1&limit=1', { method: 'GET' }),
          apiRequest('/admin/support-requests?page=1&limit=1', { method: 'GET' })
        ]);
 
@@ -159,7 +159,7 @@ const Home = () => {
        const usersData = usersResponse.ok ? await usersResponse.json() : { pagination: { total: 0 } };
        const adsData = adsResponse.ok ? await adsResponse.json() : { pagination: { total: 0 } };
        const vendorsData = vendorsResponse.ok ? await vendorsResponse.json() : { restaurants: [] };
-       const machinesData = machinesResponse.ok ? await machinesResponse.json() : { pagination: { total: 1 } };
+       const locationsData = locationsResponse.ok ? await locationsResponse.json() : { data: { pagination: { totalItems: 0 } } };
        const queriesData = queriesResponse.ok ? await queriesResponse.json() : { pagination: { total: 0 } };
 
    
@@ -187,7 +187,7 @@ const Home = () => {
             count = vendorsData.restaurants?.length || 0;
             break;
           case 'machines':
-            count = machinesData.pagination?.total || 0;
+            count = locationsData.data?.pagination?.totalItems || 0;
             break;
           case 'queries':
             count = queriesData.pagination?.total || 0;

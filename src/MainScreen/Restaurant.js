@@ -431,7 +431,8 @@ const Restaurant = () => {
                 <table style={tableStyle}>
                     <thead>
                         <tr>
-                            <th style={thStyle}>ID</th>
+                            <th style={thStyle}>No.</th>
+                           
                             <th style={thStyle}>Name</th>
                             <th style={thStyle}>Email</th>
                             <th style={thStyle}>Contact</th>
@@ -440,9 +441,10 @@ const Restaurant = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredRestaurants.map((r) => (
+                        {filteredRestaurants.map((r, index) => (
                             <tr key={r.id}>
-                                <td style={tdStyle}>{r.id}</td>
+                                <td style={tdStyle}>{index + 1}</td>
+                               
                                 <td style={tdStyle}>{r.name}</td>
                                 <td style={tdStyle}>{r.email}</td>
                                 <td style={tdStyle}>{r.contact}</td>

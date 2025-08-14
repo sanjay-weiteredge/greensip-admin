@@ -208,7 +208,8 @@ const Coupon = () => {
             <table style={tableStyle}>
                 <thead>
                     <tr>
-                        <th style={thStyle}>ID</th>
+                        <th style={thStyle}>No.</th>
+                
                         <th style={thStyle}>Code</th>
                         <th style={thStyle}>Discription</th>
                         <th style={thStyle}>Expiry</th>
@@ -217,9 +218,10 @@ const Coupon = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {filteredCoupons.map((c) => (
+                    {filteredCoupons.map((c, index) => (
                         <tr key={c.id}>
-                            <td style={tdStyle}>{c.id}</td>
+                            <td style={tdStyle}>{index + 1}</td>
+                
                             <td style={tdStyle}>{c.code}</td>
                             <td style={tdStyle}>{c.description}</td>
                             <td style={tdStyle}>{c.expiry}</td>
