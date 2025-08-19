@@ -24,6 +24,7 @@ const Location = () => {
     const [deletingLocationId, setDeletingLocationId] = useState(null);
     const [deletedLocationName, setDeletedLocationName] = useState("");
     const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     // Styles matching User.js template
     const tableStyle = {
@@ -286,6 +287,27 @@ const Location = () => {
         padding: "12px 24px",
         fontSize: "16px",
         fontWeight: "600",
+    };
+
+    const passwordFieldContainerStyle = {
+        position: "relative",
+        display: "flex",
+        alignItems: "center",
+    };
+
+    const passwordToggleButtonStyle = {
+        position: "absolute",
+        right: "12px",
+        background: "none",
+        border: "none",
+        cursor: "pointer",
+        fontSize: "16px",
+        color: "#666",
+        padding: "4px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        transition: "color 0.3s ease",
     };
 
     // Fetch locations on component mount
@@ -691,15 +713,25 @@ const Location = () => {
                                 </div>
                                 <div style={formGroupStyle}>
                                     <label style={formLabelStyle}>Machine Password *</label>
-                                    <input
-                                        type="password"
-                                        style={formControlStyle}
-                                        name="machinePassword"
-                                        value={formData.machinePassword}
-                                        onChange={handleInputChange}
-                                        placeholder="Enter machine password"
-                                        required
-                                    />
+                                    <div style={passwordFieldContainerStyle}>
+                                        <input
+                                            type={showPassword ? "text" : "password"}
+                                            style={formControlStyle}
+                                            name="machinePassword"
+                                            value={formData.machinePassword}
+                                            onChange={handleInputChange}
+                                            placeholder="Enter machine password"
+                                            required
+                                        />
+                                        <button
+                                            type="button"
+                                            style={passwordToggleButtonStyle}
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            title={showPassword ? "Hide password" : "Show password"}
+                                        >
+                                            {showPassword ? "👁️‍🗨️" : "👁️"}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             
