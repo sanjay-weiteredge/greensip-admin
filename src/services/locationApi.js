@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://13.53.50.114:8000';
+const BASE_URL = 'http://localhost:8000';
 
 
 const api = axios.create({
@@ -27,18 +27,18 @@ api.interceptors.request.use(
 
 export const createLocation = async (locationData) => {
   try {
-    const response = await api.post('/admin/locations', locationData);
+    const response = await api.post('/machine/signup', locationData);
     return response.data;
   } catch (error) {
     if (error.response) {
      
-      throw new Error(error.response.data.message || 'Failed to create location');
+      throw new Error(error.response.data.message || 'Failed to create machine');
     } else if (error.request) {
      
       throw new Error('Network error. Please check your connection.');
     } else {
 
-      throw new Error('Failed to create location');
+      throw new Error('Failed to create machine');
     }
   }
 };

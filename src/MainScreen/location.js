@@ -6,10 +6,12 @@ const Location = () => {
     const [loading, setLoading] = useState(false);
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [formData, setFormData] = useState({
-        name: '',
+        machineFullName: '',
         location: '',
         fullAddress: '',
-        coordinates: ''
+        coordinates: '',
+        machineEmail: '',
+        machinePassword: ''
     });
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
@@ -330,18 +332,20 @@ const Location = () => {
             const response = await createLocation(formData);
             
             if (response.success) {
-                setSuccess('Location created successfully!');
+                setSuccess('Machine created successfully!');
                 setFormData({
-                    name: '',
+                    machineFullName: '',
                     location: '',
                     fullAddress: '',
-                    coordinates: ''
+                    coordinates: '',
+                    machineEmail: '',
+                    machinePassword: ''
                 });
                 setShowCreateForm(false);
                 fetchLocations();
             }
         } catch (error) {
-            setError('Failed to create location: ' + error.message);
+            setError('Failed to create machine: ' + error.message);
         } finally {
             setLoading(false);
         }
@@ -372,10 +376,10 @@ const Location = () => {
                 setShowSuccessModal(true);
                 fetchLocations(currentPage, searchTerm, false);
             } else {
-                setError(response.message || 'Failed to delete location');
+                setError(response.message || 'Failed to delete machine');
             }
         } catch (error) {
-            setError('Failed to delete location: ' + error.message);
+            setError('Failed to delete machine: ' + error.message);
         } finally {
             setDeletingLocationId(null);
             setDeleteLocationId(null);
@@ -398,17 +402,17 @@ const Location = () => {
         setDeletedLocationName("");
     };
 
-    // Empty state when no locations found
+  
     if (!loading && locations.length === 0 && !showCreateForm) {
         return (
             <div style={containerStyle}>
                 <div style={headerRowStyle}>
-                    <h3 style={{ color: "green", margin: 0 }}>Locations</h3>
+                    <h3 style={{ color: "green", margin: 0 }}>Machines</h3>
                     <button 
                         style={addButtonStyle}
                         onClick={() => setShowCreateForm(true)}
                     >
-                        Add New Location
+                        Add New Machine
                     </button>
                 </div>
                 <hr />
@@ -440,7 +444,7 @@ const Location = () => {
                         marginBottom: '12px',
                         fontWeight: '600'
                     }}>
-                        {searchTerm ? 'No locations found' : 'No locations yet'}
+                        {searchTerm ? 'No machines found' : 'No machines yet'}
                     </h2>
                     
                     {/* Sub Message */}
@@ -452,8 +456,8 @@ const Location = () => {
                         lineHeight: '1.5'
                     }}>
                         {searchTerm 
-                            ? `No locations match your search "${searchTerm}". Try adjusting your search terms.`
-                            : 'There are currently no locations in the system. Add your first location to get started.'
+                            ? `No machines match your search "${searchTerm}". Try adjusting your search terms.`
+                            : 'There are currently no machines in the system. Add your first machine to get started.'
                         }
                     </p>
                     
@@ -499,7 +503,7 @@ const Location = () => {
                                 boxShadow: '0 2px 8px rgba(106, 179, 32, 0.3)'
                             }}
                         >
-                            Add First Location
+                            Add First Machine
                         </button>
                     </div>
                 </div>
@@ -510,13 +514,13 @@ const Location = () => {
     return (
         <div style={containerStyle}>
             <div style={headerRowStyle}>
-                <h3 style={{ color: "green", margin: 0 }}>Locations ({totalItems})</h3>
+                <h3 style={{ color: "green", margin: 0 }}>Machines ({totalItems})</h3>
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                     <div style={searchBarWrapperStyle}>
                         <span style={searchIconStyle}>🔍</span>
                         <input
                             type="text"
-                            placeholder="Search by name, location, or address..."
+                            placeholder="Search by machine name, location, address, or machine email..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             style={searchInputStyle}
@@ -526,7 +530,7 @@ const Location = () => {
                         style={addButtonStyle}
                         onClick={() => setShowCreateForm(!showCreateForm)}
                     >
-                        {showCreateForm ? 'Cancel' : 'Add New Location'}
+                        {showCreateForm ? 'Cancel' : 'Add New Machine'}
                     </button>
                 </div>
             </div>
@@ -600,19 +604,20 @@ const Location = () => {
             {showCreateForm && (
                 <div style={formCardStyle}>
                     <div style={formHeaderStyle}>
-                        <h5 style={formTitleStyle}>Create New Location</h5>
+                        <h5 style={formTitleStyle}>Create New Machine</h5>
                     </div>
                     <div style={formBodyStyle}>
                         <form onSubmit={handleSubmit}>
                             <div style={formRowStyle}>
                                 <div style={formGroupStyle}>
-                                    <label style={formLabelStyle}>Name *</label>
+                                    <label style={formLabelStyle}>Machine Full Name *</label>
                                     <input
                                         type="text"
                                         style={formControlStyle}
-                                        name="name"
-                                        value={formData.name}
+                                        name="machineFullName"
+                                        value={formData.machineFullName}
                                         onChange={handleInputChange}
+                                        placeholder="Enter machine full name"
                                         required
                                     />
                                 </div>
@@ -654,13 +659,62 @@ const Location = () => {
                                     Enter coordinates in format: latitude,longitude (e.g., 17.4478,78.3603)
                                 </small>
                             </div>
+                            
+                            {/* Machine Credentials Section */}
+                            <div style={{
+                                ...formHeaderStyle,
+                                marginTop: '24px',
+                                marginBottom: '16px',
+                                padding: '12px 16px',
+                                borderRadius: '6px'
+                            }}>
+                                <h6 style={{
+                                    margin: 0,
+                                    color: '#333',
+                                    fontSize: '16px',
+                                    fontWeight: '600'
+                                }}>Machine Credentials</h6>
+                            </div>
+                            
+                            <div style={formRowStyle}>
+                                <div style={formGroupStyle}>
+                                    <label style={formLabelStyle}>Machine Email *</label>
+                                    <input
+                                        type="email"
+                                        style={formControlStyle}
+                                        name="machineEmail"
+                                        value={formData.machineEmail}
+                                        onChange={handleInputChange}
+                                        placeholder="machine@example.com"
+                                        required
+                                    />
+                                </div>
+                                <div style={formGroupStyle}>
+                                    <label style={formLabelStyle}>Machine Password *</label>
+                                    <input
+                                        type="password"
+                                        style={formControlStyle}
+                                        name="machinePassword"
+                                        value={formData.machinePassword}
+                                        onChange={handleInputChange}
+                                        placeholder="Enter machine password"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div style={formGroupStyle}>
+                                <small style={formTextStyle}>
+                                    Password will be used for machine authentication
+                                </small>
+                            </div>
                             <div style={btnGroupStyle}>
                                 <button 
                                     type="submit" 
                                     style={btnPrimaryStyle}
                                     disabled={loading}
                                 >
-                                    {loading ? 'Creating...' : 'Create Location'}
+                                    {loading ? 'Creating...' : 'Create Machine'}
                                 </button>
                                 <button 
                                     type="button" 
@@ -680,17 +734,18 @@ const Location = () => {
                 <>
                     {loading ? (
                         <div style={{ textAlign: 'center', padding: '50px' }}>
-                            <div style={{ fontSize: '18px', color: '#666' }}>Loading locations...</div>
+                            <div style={{ fontSize: '18px', color: '#666' }}>Loading machines...</div>
                         </div>
                     ) : (
                         <table style={tableStyle}>
                             <thead>
                                 <tr>
                                     <th style={thStyle}>ID</th>
-                                    <th style={thStyle}>Name</th>
+                                    <th style={thStyle}>Machine Full Name</th>
                                     <th style={thStyle}>Location</th>
                                     <th style={thStyle}>Full Address</th>
                                     <th style={thStyle}>Coordinates</th>
+                                    <th style={thStyle}>Machine Email</th>
                                     <th style={thStyle}>Created</th>
                                     <th style={thStyle}>Actions</th>
                                 </tr>
@@ -702,10 +757,11 @@ const Location = () => {
                                     return (
                                         <tr key={location.id}>
                                             <td style={tdStyle}>{rowNumber}</td>
-                                            <td style={tdStyle}>{location.name}</td>
+                                            <td style={tdStyle}>{location.machineFullName || '-'}</td>
                                             <td style={tdStyle}>{location.location}</td>
                                             <td style={tdStyle}>{location.fullAddress}</td>
                                             <td style={tdStyle}>{location.coordinates}</td>
+                                            <td style={tdStyle}>{location.machineEmail || '-'}</td>
                                             <td style={tdStyle}>{new Date(location.createdAt).toLocaleDateString()}</td>
                                             <td style={tdStyle}>
                                                 <div style={actionStyle}>
@@ -784,7 +840,7 @@ const Location = () => {
                 <div style={modalOverlayStyle}>
                     <div style={modalContentStyle}>
                         <h4 style={{ marginBottom: "16px", color: "#e53935" }}>Confirm Deletion</h4>
-                        <p style={{ marginBottom: "24px" }}>Are you sure you want to delete this location?</p>
+                        <p style={{ marginBottom: "24px" }}>Are you sure you want to delete this machine?</p>
                         <div style={modalButtonGroupStyle}>
                             <button
                                 onClick={handleCancelDelete}
@@ -866,7 +922,7 @@ const Location = () => {
                                 animation: "slideInUp 0.6s ease-out 0.2s both"
                             }}
                         >
-                            🎉 Location Deleted Successfully!
+                            🎉 Machine Deleted Successfully!
                         </h2>
 
                         <p
@@ -878,7 +934,7 @@ const Location = () => {
                                 animation: "slideInUp 0.6s ease-out 0.4s both"
                             }}
                         >
-                            The location <span style={{ color: "#4caf50", fontWeight: "600" }}>"{deletedLocationName}"</span> has been permanently removed from the system.
+                            The machine <span style={{ color: "#4caf50", fontWeight: "600" }}>"{deletedLocationName}"</span> has been permanently removed from the system.
                         </p>
 
                         {/* Stats Cards */}

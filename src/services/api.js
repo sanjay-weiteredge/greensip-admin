@@ -1,4 +1,4 @@
-const BASE_URL = 'http://13.53.50.114:8000';
+const BASE_URL = 'https://greensip.hrgroupsolution.com';
 
 export const apiRequest = async (endpoint, options = {}) => {
   const token = localStorage.getItem('token');
