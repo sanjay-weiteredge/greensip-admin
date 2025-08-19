@@ -14,7 +14,7 @@ export const getAdminProfile = async () => {
 export const updateAdminProfile = async (profileData, imageFile) => {
   try {
     let options;
-    let url = 'http://13.53.50.114:8000/admin/updateProfile';
+    let url = 'https://greensip.hrgroupsolution.com/admin/updateProfile';
     if (imageFile) {
       const formData = new FormData();
       Object.entries(profileData).forEach(([key, value]) => {

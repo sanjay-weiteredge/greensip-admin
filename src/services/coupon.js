@@ -11,7 +11,7 @@ export const createCoupon = async (couponData, imageFile) => {
     if (imageFile) {
       formData.append('couponImage', imageFile);
     }
-    const response = await fetch('http://13.53.50.114:8000/admin/coupons', {
+    const response = await fetch('https://greensip.hrgroupsolution.com/admin/coupons', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`,

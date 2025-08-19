@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = 'http://13.53.50.114:8000';
+const BASE_URL = 'https://greensip.hrgroupsolution.com';
 
 const getSupportRequests = async (params = {}) => {
     const { page = 1, limit = 10, status } = params;
