@@ -56,7 +56,7 @@ export default function AppRoutes() {
         }
       />
        <Route
-        path="/Location"
+        path="/Machine"
         element={
           <PrivateRoute>
             <LocationManagement/>

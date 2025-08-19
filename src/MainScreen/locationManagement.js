@@ -9,7 +9,7 @@ const LocationManagement = () => {
   return (
     <>
    
-      <NavTemplate tab={"Location"}>
+      <NavTemplate tab={"Machine"}>
       <PageBody>
       <Location/>
       </PageBody>

@@ -38,7 +38,7 @@ export const navBarCoordinationOptions = [
     },
     {
       icon: LocationIcon,
-      label: "Location",
+      label: "Machine",
     },
     {
       icon: NavOrdersIcon,
